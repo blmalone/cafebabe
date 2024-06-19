@@ -61,8 +61,14 @@ contract CoffeeShopFactory {
         userIdToOwner[userCounter] = owner;
         ownerToUserId[owner] = userCounter;
 
+        console2.log("User counter: %d", userCounter);
+
         string memory userId = toSixDigitString(userCounter);
 
+        console2.log("User ID: %s", userId);
+        console2.log("Owner: %s", owner);
+        console2.log("Coffee shop: %s", coffeeShop);
+        
         emit CoffeeShopCreated(owner, coffeeShop, userCounter);
         emit OwnerRegistered(owner, userCounter);
         emit UserIdAssigned(owner, userCounter, userId);

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import "forge-std/console2.sol";
 
 interface IERC20 {
     function approve(address spender, uint256 amount) external returns (bool);
@@ -51,11 +52,11 @@ contract CoffeeShop {
         _;
     }
 
-    function initialize(
-        address _owner,
-        address _usdcAddress
-    ) internal {
-        require(initialized == false && owner == address(0), "Already initialized");
+    function initialize(address _owner, address _usdcAddress) internal {
+        require(
+            initialized == false && owner == address(0),
+            "Already initialized"
+        );
         owner = _owner;
         usdc = IERC20(_usdcAddress);
         minAmount = 1 * 10 ** 18; // Assuming 1 USDC (decimals may vary)
@@ -114,13 +115,17 @@ contract CoffeeShop {
             );
             emit Payment(msg.sender, amount);
         } else {
+
             loyaltyPoints[msg.sender] = 0;
             emit FreeCoffee(msg.sender, amount);
+            return;
         }
 
-        points += 1;
-        loyaltyPoints[msg.sender] = points;
-        emit LoyaltyPointsUpdated(msg.sender, points);
+        if (amount >= minAmount) {
+            points += 1;
+            loyaltyPoints[msg.sender] = points;
+            emit LoyaltyPointsUpdated(msg.sender, points);
+        }
     }
 
     function pay(
@@ -141,7 +146,7 @@ contract CoffeeShop {
 
     function generateRandomNumber() public view returns (uint256) {
         uint256 blockNumber = block.number - 1; // Use the previous block's hash
-        bytes32 blockHash = blockhash(blockNumber);
+        bytes32 blockHash = blockhash(blockNumber); // only holds last 256 block hashes
         return uint256(blockHash);
     }
 
