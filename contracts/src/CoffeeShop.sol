@@ -1,23 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "forge-std/console2.sol";
 
 interface IERC20 {
     function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external;
 }
 
 contract CoffeeShop {
@@ -42,10 +32,7 @@ contract CoffeeShop {
     event UsdcAddressUpdated(address indexed newUsdc);
     event MinAmountUpdated(uint256 newMinAmount);
     event BasisPointsUpdated(uint256 newBasisPoints);
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can perform this action");
@@ -53,30 +40,21 @@ contract CoffeeShop {
     }
 
     function initialize(address _owner, address _usdcAddress) internal {
-        require(
-            initialized == false && owner == address(0),
-            "Already initialized"
-        );
+        require(initialized == false && owner == address(0), "Already initialized");
         owner = _owner;
         usdc = IERC20(_usdcAddress);
         minAmount = 1 * 10 ** 18; // Assuming 1 USDC (decimals may vary)
         initialized = true;
     }
 
-    function initializeRandomizedLoyaltyScheme(
-        address _owner,
-        address _usdcAddress,
-        uint256 _basisPoints
-    ) external {
+    function initializeRandomizedLoyaltyScheme(address _owner, address _usdcAddress, uint256 _basisPoints) external {
         initialize(_owner, _usdcAddress);
         basisPoints = _basisPoints;
     }
 
-    function initializePredictableLoyaltyScheme(
-        address _owner,
-        address _usdcAddress,
-        uint256 _numPurchasesBeforeFree
-    ) external {
+    function initializePredictableLoyaltyScheme(address _owner, address _usdcAddress, uint256 _numPurchasesBeforeFree)
+        external
+    {
         initialize(_owner, _usdcAddress);
         numPurchasesBeforeFree = _numPurchasesBeforeFree;
     }
@@ -94,10 +72,7 @@ contract CoffeeShop {
         bool isNextFree = randomNum % chance == 0;
 
         if (!isNextFree) {
-            require(
-                usdc.transferFrom(msg.sender, owner, amount),
-                "Transfer failed"
-            );
+            require(usdc.transferFrom(msg.sender, owner, amount), "Transfer failed");
             emit Payment(msg.sender, amount);
         } else {
             emit FreeCoffee(msg.sender, amount);
@@ -109,13 +84,9 @@ contract CoffeeShop {
         bool isNextFree = points == numPurchasesBeforeFree;
 
         if (!isNextFree) {
-            require(
-                usdc.transferFrom(msg.sender, owner, amount),
-                "Transfer failed"
-            );
+            require(usdc.transferFrom(msg.sender, owner, amount), "Transfer failed");
             emit Payment(msg.sender, amount);
         } else {
-
             loyaltyPoints[msg.sender] = 0;
             emit FreeCoffee(msg.sender, amount);
             return;
@@ -128,13 +99,7 @@ contract CoffeeShop {
         }
     }
 
-    function pay(
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
+    function pay(uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
         usdc.permit(msg.sender, address(this), amount, deadline, v, r, s);
 
         if (isRandomizedLoyaltyScheme()) {

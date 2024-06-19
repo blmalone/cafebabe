@@ -52,20 +52,20 @@ contract CoffeeShopTest is Test {
 
         uint256 numIterations = 4;
 
-        // We CAN test randomness here because forge is deterministically generating the 
+        // We CAN test randomness here because forge is deterministically generating the
         // block numbers, which we use to generate the random number.
-          for (uint256 i = 0; i < numIterations; i++) {
+        for (uint256 i = 0; i < numIterations; i++) {
             if (i == 2) {
                 vm.expectEmit();
                 emit CoffeeShop.FreeCoffee(user, 2e18);
             } else {
                 vm.expectEmit();
                 emit CoffeeShop.Payment(user, 2e18);
-             }
-            
+            }
+
             vm.prank(user);
             coffeeShop.pay(2e18, deadline, v, r, s);
-            vm.roll(i+1);
+            vm.roll(i + 1);
         }
     }
 
@@ -121,15 +121,10 @@ contract MockERC20 is IERC20 {
         return true;
     }
 
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external override {
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external
+        override
+    {
         // Mock implementation of permit
         allowances[owner][spender] = value;
     }

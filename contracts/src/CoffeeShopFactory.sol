@@ -13,11 +13,7 @@ contract CoffeeShopFactory {
     mapping(uint256 => address) private userIdToOwner;
     mapping(address => uint256) private ownerToUserId;
 
-    event CoffeeShopCreated(
-        address indexed owner,
-        address coffeeShop,
-        uint256 userId
-    );
+    event CoffeeShopCreated(address owner, address indexed coffeeShop, uint256 userId);
     event OwnerRegistered(address indexed owner, uint256 userId);
     event OwnerRegistrationFailed(address indexed owner, string reason);
     event UserIdAssigned(address indexed owner, uint256 counter, string userId);
@@ -44,17 +40,9 @@ contract CoffeeShopFactory {
         address coffeeShop = implementation.clone();
 
         if (_randomizedLoyaltyScheme) {
-            CoffeeShop(coffeeShop).initializeRandomizedLoyaltyScheme(
-                owner,
-                _usdcAddress,
-                _loyaltySchemeConfiguration
-            );
+            CoffeeShop(coffeeShop).initializeRandomizedLoyaltyScheme(owner, _usdcAddress, _loyaltySchemeConfiguration);
         } else {
-            CoffeeShop(coffeeShop).initializePredictableLoyaltyScheme(
-                owner,
-                _usdcAddress,
-                _loyaltySchemeConfiguration
-            );
+            CoffeeShop(coffeeShop).initializePredictableLoyaltyScheme(owner, _usdcAddress, _loyaltySchemeConfiguration);
         }
 
         userCounter -= 1;
@@ -68,7 +56,7 @@ contract CoffeeShopFactory {
         console2.log("User ID: %s", userId);
         console2.log("Owner: %s", owner);
         console2.log("Coffee shop: %s", coffeeShop);
-        
+
         emit CoffeeShopCreated(owner, coffeeShop, userCounter);
         emit OwnerRegistered(owner, userCounter);
         emit UserIdAssigned(owner, userCounter, userId);

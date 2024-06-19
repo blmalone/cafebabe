@@ -8,7 +8,7 @@ solc = "0.8.25"
 evm_version = 'cancun'
 
 [rpc_endpoints]
-base = "https://mainnet.base.org"
+base = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"
 base_sepolia = "https://sepolia.base.org"
 base_goerli = "https://goerli.base.org"
 

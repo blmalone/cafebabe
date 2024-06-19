@@ -69,11 +69,10 @@ library Clones {
      * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
      * to always have enough balance for new deployments. Consider exposing this function under a payable method.
      */
-    function cloneDeterministic(
-        address implementation,
-        bytes32 salt,
-        uint256 value
-    ) internal returns (address instance) {
+    function cloneDeterministic(address implementation, bytes32 salt, uint256 value)
+        internal
+        returns (address instance)
+    {
         if (address(this).balance < value) {
             revert Errors.InsufficientBalance(address(this).balance, value);
         }
@@ -94,11 +93,11 @@ library Clones {
     /**
      * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
      */
-    function predictDeterministicAddress(
-        address implementation,
-        bytes32 salt,
-        address deployer
-    ) internal pure returns (address predicted) {
+    function predictDeterministicAddress(address implementation, bytes32 salt, address deployer)
+        internal
+        pure
+        returns (address predicted)
+    {
         /// @solidity memory-safe-assembly
         assembly {
             let ptr := mload(0x40)
@@ -115,10 +114,11 @@ library Clones {
     /**
      * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
      */
-    function predictDeterministicAddress(
-        address implementation,
-        bytes32 salt
-    ) internal view returns (address predicted) {
+    function predictDeterministicAddress(address implementation, bytes32 salt)
+        internal
+        view
+        returns (address predicted)
+    {
         return predictDeterministicAddress(implementation, salt, address(this));
     }
 }
