@@ -1,3 +1,3 @@
-import { baseSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 
-export const EXPECTED_CHAIN = baseSepolia;
+export const EXPECTED_CHAIN = base;

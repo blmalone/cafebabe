@@ -1,4 +1,4 @@
-import { baseSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 import { createWagmiConfig } from '../createWagmiConfig';
 import { Environment, EnvironmentKeys } from '../environment';
 
@@ -23,6 +23,6 @@ describe('createWagmiConfig', () => {
   ])('returns valid Wagmi config when env=%s', (environment) => {
     process.env[EnvironmentKeys.environment] = environment;
     const config = createWagmiConfig('https://api.developer.coinbase.com/rpc/v1/base/example');
-    expect(config.chains[0].id).toEqual(baseSepolia.id);
+    expect(config.chains[0].id).toEqual(base.id);
   });
 });

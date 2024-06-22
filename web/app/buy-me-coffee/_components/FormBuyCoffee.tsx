@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import clsx from 'clsx';
 import { parseEther } from 'viem';
 import Button from '@/components/Button/Button';
-import { useBuyMeACoffeeContract } from '../_contracts/useBuyMeACoffeeContract';
+import { useCoffeeShopContract } from '../_contracts/useCoffeeShopContract';
 import useFields from '../_hooks/useFields';
 import useOnchainCoffeeMemos from '../_hooks/useOnchainCoffeeMemos';
 import ContractAlert from './ContractAlert';
@@ -16,17 +16,11 @@ const GAS_COST = 0.0001;
 const COFFEE_COUNT = [1, 2, 3, 4];
 
 const initFields = {
-  name: '',
-  twitterHandle: '',
-  message: '',
-  coffeeCount: 1,
+  amount: 0,
 };
 
 type Fields = {
-  name: string;
-  twitterHandle: string;
-  coffeeCount: number;
-  message: string;
+  name: number;
 };
 
 type FormBuyCoffeeProps = {
@@ -34,7 +28,7 @@ type FormBuyCoffeeProps = {
 };
 
 function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
-  const contract = useBuyMeACoffeeContract();
+  const contract = useCoffeeShopContract();
 
   const { fields, setField, resetFields } = useFields<Fields>(initFields);
 
@@ -45,11 +39,11 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
 
   const { disabled, transactionState, resetContractForms, onSubmitTransaction } =
     useSmartContractForms({
-      gasFee: parseEther(String(GAS_COST * fields.coffeeCount)),
+      gasFee: parseEther(String(GAS_COST)),
       contract,
-      name: 'buyCoffee',
-      arguments: [fields.coffeeCount, fields.name, fields.twitterHandle, fields.message],
-      enableSubmit: fields.name !== '' && fields.message !== '',
+      name: 'pay',
+      arguments: [fields.amount],
+      enableSubmit: fields.amount !== '',
       reset,
     });
 
@@ -67,66 +61,17 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
   return (
     <>
       <h2 className="mb-5 w-full text-center text-2xl font-semibold text-white lg:text-left">
-        Buy Me a Coffee!
+        Complete Purchase
       </h2>
       <form onSubmit={onSubmitTransaction} className="w-full">
-        <div className="my-4 items-center lg:flex lg:gap-4">
-          <div className="text-center text-4xl lg:text-left">☕</div>
-          <div className="mb-4 mt-2 text-center font-sans text-xl lg:my-0 lg:text-left">X</div>
-          <div className="mx-auto flex max-w-[300px] gap-3 lg:max-w-max">
-            {COFFEE_COUNT.map((count) => (
-              <button
-                key={`num-coffee-btn-${count}`}
-                type="button"
-                className={clsx(
-                  `${
-                    fields.coffeeCount === count
-                      ? 'bg-gradient-2'
-                      : 'border border-boat-color-orange'
-                  } block h-[40px] w-full rounded lg:w-[40px]`,
-                )}
-                // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
-                onClick={() => setField('coffeeCount', count)}
-              >
-                {count}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div>
           <div className="mb-5">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="amount">Amount</Label>
             <InputText
-              id="name"
-              placeholder="Name"
+              id="amount"
+              placeholder="amount to charge (USDC)"
               // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
-              onChange={(evt) => setField('name', evt.target.value)}
-              disabled={disabled}
-              required
-            />
-          </div>
-
-          <div className="mb-5">
-            <Label htmlFor="twitterHandle">Twitter handle (Optional)</Label>
-            <InputText
-              id="twitterHandle"
-              placeholder="@"
-              // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
-              onChange={(evt) => {
-                setField('twitterHandle', evt.target.value);
-              }}
-              disabled={disabled}
-            />
-          </div>
-
-          <div className="mb-5">
-            <Label htmlFor="message">Message</Label>
-            <TextArea
-              id="message"
-              placeholder="Say something"
-              // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
-              onChange={(evt) => setField('message', evt.target.value)}
+              onChange={(evt) => setField('amount', evt.target.value)}
               disabled={disabled}
               required
             />
@@ -136,10 +81,7 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
 
           <Button
             buttonContent={
-              <>
-                Send {fields.coffeeCount} coffee{fields.coffeeCount > 1 ? 's' : null} for{' '}
-                {String((GAS_COST * fields.coffeeCount).toFixed(4))} ETH
-              </>
+              <>Buy</>
             }
             type="submit"
             disabled={disabled}

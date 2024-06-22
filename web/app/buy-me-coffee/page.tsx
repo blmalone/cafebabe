@@ -5,7 +5,6 @@ import Banner from '@/components/layout/banner/banner';
 import Header from '@/components/layout/header/Header';
 import Main from '@/components/layout/Main';
 import BuyMeCoffeeContractDemo from './_components/ContractDemo';
-import Guide from './_components/Guide';
 
 /**
  * Use the page component to wrap the components
@@ -27,9 +26,7 @@ export default function BuyMeCoffeePage() {
     <>
       <Header />
       <Main>
-        <Banner pageName="Buy Me A Coffee" pageUrl="buy-me-coffee" />
         <BuyMeCoffeeContractDemo />
-        <Guide />
       </Main>
     </>
   );

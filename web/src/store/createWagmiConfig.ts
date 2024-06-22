@@ -1,5 +1,5 @@
 import { createConfig, http } from 'wagmi';
-import { base, baseSepolia } from 'wagmi/chains';
+import { base } from 'wagmi/chains';
 import { coinbaseWallet } from 'wagmi/connectors';
 
 export function createWagmiConfig(rpcUrl: string, projectId?: string) {
@@ -10,10 +10,9 @@ export function createWagmiConfig(rpcUrl: string, projectId?: string) {
 
   // Temporary hack, until we configure a FE page in OnchainKit to copy just the API key
   const baseUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base/');
-  const baseSepoliaUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base-sepolia/');
 
   return createConfig({
-    chains: [base, baseSepolia],
+    chains: [base],
     connectors: [
       coinbaseWallet({
         appName: '0xCafeBabe',
@@ -22,7 +21,6 @@ export function createWagmiConfig(rpcUrl: string, projectId?: string) {
     ],
     ssr: true,
     transports: {
-      [baseSepolia.id]: http(baseSepoliaUrl),
       [base.id]: http(baseUrl),
     },
   });

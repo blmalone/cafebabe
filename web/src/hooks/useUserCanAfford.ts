@@ -11,9 +11,8 @@ export function useAddressCanAfford(address: `0x${string}`, amount: bigint) {
   const result = useBalance({
     address,
   });
-
+  
   if (!result.data) return false;
-
   return amount <= result.data.value;
 }
 

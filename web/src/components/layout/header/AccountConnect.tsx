@@ -1,5 +1,5 @@
 import { ConnectAccount } from '@coinbase/onchainkit/wallet';
-import { baseSepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 import { AccountDropdown } from './AccountDropdown';
 import { AccountInfoPanel } from './AccountInfoPanel';
@@ -33,7 +33,7 @@ function AccountConnect() {
           return <ConnectAccount />;
         }
 
-        if (account.status === 'connected' && chainId !== baseSepolia.id) {
+        if (account.status === 'connected' && chainId !== base.id) {
           return (
             <button onClick={() => disconnect()} type="button">
               Wrong network
