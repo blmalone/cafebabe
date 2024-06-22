@@ -13,10 +13,10 @@ export function createWagmiConfig(rpcUrl: string, projectId?: string) {
   const baseSepoliaUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base-sepolia/');
 
   return createConfig({
-    chains: [baseSepolia],
+    chains: [base, baseSepolia],
     connectors: [
       coinbaseWallet({
-        appName: 'buildonchainapps',
+        appName: '0xCafeBabe',
         preference: 'all', // Setting this as all gives you the QR code for scanning with Coinbase wallet.
       }),
     ],

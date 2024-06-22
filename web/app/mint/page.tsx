@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import Banner from '@/components/layout/banner/banner';
-import Footer from '@/components/layout/footer/Footer';
 import Header from '@/components/layout/header/Header';
 import Main from '@/components/layout/Main';
 import Guide from './_components/Guide';
@@ -30,7 +29,6 @@ export default function MintPage() {
         <MintContractDemo />
         <Guide />
       </Main>
-      <Footer />
     </>
   );
 }

@@ -8,7 +8,6 @@ import {
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { clsx } from 'clsx';
 import AccountConnect from './AccountConnect';
-import { Experiences } from './Experiences';
 import { NavbarLink, NavbarTitle } from './Navbar';
 
 export default function NavbarMobile() {
@@ -66,7 +65,6 @@ export default function NavbarMobile() {
                         'mt-4 rounded-lg p-6 shadow backdrop-blur-2xl',
                       )}
                     >
-                      <Experiences />
                     </NavigationMenu.Content>
                   </NavigationMenu.Item>
                 </NavigationMenu.List>
