@@ -32,11 +32,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
-          cache: yarn
+          node-version: '21.7.2'
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
