@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '21.7.2'
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v4     
+
       - name: Install dependencies
         run: |
           cd web
@@ -38,7 +41,7 @@ jobs:
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./web/out/static
+          path: ./web/out
 
   deploy:
     needs: build-and-deploy
