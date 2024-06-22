@@ -32,7 +32,7 @@ jobs:
         run: |
           cd web
           rm -rf next
-          rm -rf cache
+          rm -rf out/cache
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
