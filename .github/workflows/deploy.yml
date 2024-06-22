@@ -31,8 +31,8 @@ jobs:
       - name: Clean up cache files
         run: |
           cd web
-          rm -rf .next
-          rm -rf .cache
+          rm -rf next
+          rm -rf cache
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
