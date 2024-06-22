@@ -15,3 +15,5 @@ node_modules/
 **/mjs/
 **/out/
 **/templates/
+app/
+src/
