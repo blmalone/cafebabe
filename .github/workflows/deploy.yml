@@ -32,7 +32,8 @@ jobs:
         run: |
           cd web
           rm -rf next
-          rm -rf out/cache
+          rm -rf out/cache/webpack/server-production/0.pack
+          rm -rf out/cache/webpack/client-production/0.pack
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
