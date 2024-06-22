@@ -1,0 +1,11 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/api/paymaster-proxy/route": "app/api/paymaster-proxy/route.js",
+  "/api/rpc/route": "app/api/rpc/route.js",
+  "/paymaster-bundler/page": "app/paymaster-bundler/page.js",
+  "/api/chains/supported/route": "app/api/chains/supported/route.js",
+  "/api/chain/currentBlockNumber/route": "app/api/chain/currentBlockNumber/route.js",
+  "/page": "app/page.js",
+  "/buy-me-coffee/page": "app/buy-me-coffee/page.js",
+  "/mint/page": "app/mint/page.js"
+}

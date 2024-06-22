@@ -1,0 +1,88 @@
+{
+  "pages": {
+    "/_not-found": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/app/_not-found-431cd34a95150afd.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/2483-4cbda76f3f4fb046.js",
+      "static/chunks/1318-a46ada0372ce456d.js",
+      "static/css/20606ee0c9b47e0b.css",
+      "static/chunks/app/layout-b33bf2327c0ffe3d.js"
+    ],
+    "/paymaster-bundler/page": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/0e5ce63c-e07820f93bc3265e.js",
+      "static/chunks/2483-4cbda76f3f4fb046.js",
+      "static/chunks/7133-5e173216a5036e4d.js",
+      "static/chunks/9971-e29864ea7aa6d7df.js",
+      "static/chunks/6391-13971fb4dda4a687.js",
+      "static/chunks/4971-52d942d0327e997a.js",
+      "static/css/c31f7653687ba0d6.css",
+      "static/chunks/app/paymaster-bundler/page-6a66f6b5dcf0ce54.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/0e5ce63c-e07820f93bc3265e.js",
+      "static/chunks/2483-4cbda76f3f4fb046.js",
+      "static/chunks/9971-e29864ea7aa6d7df.js",
+      "static/chunks/app/page-c06dc1e0d1b874d1.js"
+    ],
+    "/buy-me-coffee/page": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/0e5ce63c-e07820f93bc3265e.js",
+      "static/chunks/2483-4cbda76f3f4fb046.js",
+      "static/chunks/7133-5e173216a5036e4d.js",
+      "static/chunks/9971-e29864ea7aa6d7df.js",
+      "static/chunks/6391-13971fb4dda4a687.js",
+      "static/chunks/2970-c7e132ec02fb1e0b.js",
+      "static/chunks/4971-52d942d0327e997a.js",
+      "static/css/c31f7653687ba0d6.css",
+      "static/chunks/app/buy-me-coffee/page-0f7144dc9d2d1de2.js"
+    ],
+    "/buy-me-coffee/layout": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/app/buy-me-coffee/layout-baba0840dc2fcb1e.js"
+    ],
+    "/mint/layout": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/app/mint/layout-b07ad4be0e0364f1.js"
+    ],
+    "/mint/page": [
+      "static/chunks/webpack-8524fb8f6cf13474.js",
+      "static/chunks/fd9d1056-1877374a4beec023.js",
+      "static/chunks/2472-c68c8abf88c11a99.js",
+      "static/chunks/main-app-a2acecb0e10307ce.js",
+      "static/chunks/0e5ce63c-e07820f93bc3265e.js",
+      "static/chunks/2483-4cbda76f3f4fb046.js",
+      "static/chunks/7133-5e173216a5036e4d.js",
+      "static/chunks/9971-e29864ea7aa6d7df.js",
+      "static/chunks/6391-13971fb4dda4a687.js",
+      "static/chunks/4971-52d942d0327e997a.js",
+      "static/css/c31f7653687ba0d6.css",
+      "static/chunks/app/mint/page-3c23c9afde7e8901.js"
+    ]
+  }
+}
