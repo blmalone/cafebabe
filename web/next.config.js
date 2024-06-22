@@ -23,6 +23,8 @@ const nextConfig = withPWA({
       },
     ],
   },
+  // Use the output directory `out`
+  distDir: 'out',
 });
 
 module.exports = nextConfig;
