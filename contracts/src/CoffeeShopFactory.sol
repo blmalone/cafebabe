@@ -12,6 +12,7 @@ contract CoffeeShopFactory {
 
     mapping(uint256 => address) private userIdToOwner;
     mapping(address => uint256) private ownerToUserId;
+    mapping(uint256 => address) private userIdToCoffeeShop;
 
     event CoffeeShopCreated(address owner, address indexed coffeeShop, uint256 userId);
     event OwnerRegistered(address indexed owner, uint256 userId);
@@ -48,6 +49,7 @@ contract CoffeeShopFactory {
         userCounter -= 1;
         userIdToOwner[userCounter] = owner;
         ownerToUserId[owner] = userCounter;
+        userIdToCoffeeShop[userCounter] = coffeeShop;
 
         console2.log("User counter: %d", userCounter);
 
@@ -70,6 +72,10 @@ contract CoffeeShopFactory {
 
     function getUserIdByOwner(address _owner) external view returns (uint256) {
         return ownerToUserId[_owner];
+    }
+
+    function getCoffeeShopByUserId(uint256 _userId) external view returns (address) {
+        return userIdToCoffeeShop[_userId];
     }
 
     function toSixDigitString(uint256 _value) internal returns (string memory) {
