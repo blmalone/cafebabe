@@ -15,6 +15,8 @@ const rpcUrl = '/api/rpc';
 
 const wagmiConfig = createWagmiConfig(rpcUrl);
 
+console.log("OnchainProviders: wagmiConfig.state.chainId" + wagmiConfig.state.chainId)
+
 function OnchainProviders({ children }: Props) {
   return (
     <WagmiProvider config={wagmiConfig}>

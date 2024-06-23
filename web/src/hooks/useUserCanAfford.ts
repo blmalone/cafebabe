@@ -50,6 +50,9 @@ export function useAddressCanAfford(address: `0x${string}`, amount: bigint) {
  */
 export function useLoggedInUserCanAfford(amount: bigint) {
   const account = useAccount();
+  console.log("####### useLoggedInUserCanAfford #######");
+  console.log(account);
+  console.log("####### useLoggedInUserCanAfford #######");
 
   return useAddressCanAfford(account.address as `0x${string}`, amount);
 }

@@ -15,6 +15,7 @@ function AccountConnect() {
   const { status } = useConnect();
   const { disconnect } = useDisconnect();
   const chainId = useChainId();
+  console.log("AccountConnect.chainId: " + chainId);
 
   return (
     <div
@@ -32,7 +33,8 @@ function AccountConnect() {
         if (account.status === 'disconnected') {
           return <ConnectAccount />;
         }
-
+        console.log("CHAIN ID: " + chainId);
+        console.log("base.id: " + base.id);
         if (account.status === 'connected' && chainId !== base.id) {
           return (
             <button onClick={() => disconnect()} type="button">

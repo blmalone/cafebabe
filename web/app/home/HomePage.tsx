@@ -1,20 +1,23 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { ethers, Signer } from 'ethers';
-import Banner from '@/components/layout/banner/banner';
+
 import NextLink from 'next/link';
 import { useAccount } from 'wagmi';
 import Header from '@/components/layout/header/Header';
 import clsx from 'clsx';
-
-const COFFEE_SHOP_PROXY_ADDRESS = '0x9487C5e6eF2aeb9e684566F785359712EAF7A17F';
-const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
-const USDC_DECIMALS = 6;
-const BASE_CHAIN_ID = 8453;
-const COINBASE_BLUE = '#0052ff';
+import { createWagmiConfig } from '@/store/createWagmiConfig';
+// import { QueryClient } from '@tanstack/react-query';
 
 export default function HomePage() {
-  const account = useAccount();
+
+  const rpcUrl = '/api/rpc';
+  const wagmiConfig = createWagmiConfig(rpcUrl);
+  console.log("HomePage: wagmiConfig.state.chainId " + wagmiConfig.state.chainId);
+
+  const account = useAccount(wagmiConfig as any);
+  console.log("HomePage.chainId:", account.chainId);
+
+  const account2 = useAccount();
+  console.log("HomePage.chainId without external config:", account2.chainId);
 
   return (
     <>
