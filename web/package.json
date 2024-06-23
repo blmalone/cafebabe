@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rm -rf dist && rm -rf .cache",
+    "crazy-clean": "yarn run clean && rm -rf node_modules",
     "start": "parcel public/index.html --port 3000",
     "build": "parcel build public/index.html --no-cache"
   },
