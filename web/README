@@ -1,0 +1,62 @@
+0xCafeBabe
+0xCafeBabe is a decentralized application (DApp) that allows users to buy coffee using cryptocurrency. The application integrates with Coinbase Wallet and uses Ethereum smart contracts to facilitate transactions.
+
+Installation
+Clone the repository:
+
+bash
+Copy code
+git clone https://github.com/yourusername/0xCafeBabe.git
+cd 0xCafeBabe
+Install dependencies:
+
+bash
+Copy code
+npm install
+Set up environment variables:
+
+Create a .env file in the root of your project and add your Infura Project ID:
+
+plaintext
+Copy code
+INFURA_ID=your_infura_project_id
+Running the Application
+To run the application locally, use the following command:
+
+bash
+Copy code
+npm start
+This will start a development server at http://localhost:3000.
+
+Project Structure
+java
+Copy code
+your-project/
+├── node_modules/
+├── public/
+│   ├── index.html
+├── src/
+│   ├── components/
+│   │   ├── Modal.tsx
+│   ├── abi/
+│   │   ├── CoffeeShopAbi.ts
+│   ├── App.tsx
+│   ├── index.tsx
+│   ├── providers.ts
+├── .env
+├── package.json
+├── tsconfig.json
+Technologies Used
+React
+TypeScript
+Chakra UI
+Ethers.js
+Parcel
+Coinbase Wallet SDK
+Environment Variables
+The project uses the following environment variable:
+
+INFURA_ID: Your Infura Project ID used to connect to the Ethereum network.
+License
+This project is licensed under the MIT License.
+
