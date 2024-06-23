@@ -16,12 +16,12 @@ import {
 import SelectWalletModal from "./components/Modal";
 import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 import { ethers } from "ethers";
-// import { OnchainKitProvider } from '@coinbase/onchainkit';
-// import { Avatar } from '@coinbase/onchainkit/esm/identity';
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
+import { Avatar } from '@coinbase/onchainkit/esm/identity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider, createConfig, http, useAccount, useDisconnect } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
+import '@coinbase/onchainkit/src/styles.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 
@@ -44,6 +44,47 @@ const wagmiConfig = createConfig({
     [base.id]: http(baseUrl),
   },
 });
+
+const AccountConnect = () => {
+  const { address, status } = useAccount();
+  const { disconnect } = useDisconnect();
+
+  return (
+    <div className="flex flex-grow">
+      {(() => {
+        if (status === 'disconnected') {
+          return <ConnectAccount />;
+        }
+
+        return (
+          <div className="flex h-8 w-8 items-center justify-center">
+            {address && (
+              <button type="button" onClick={() => disconnect()}>
+                <Avatar
+                  address={address}
+                  loadingComponent={(
+                    <div className="h-8 w-8">
+                      <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="yellow" stroke="yellow" stroke-width="1" />
+                      </svg>
+                    </div>
+                  )}
+                  defaultComponent={(
+                    <div className="h-8 w-8">
+                      <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="green" stroke="green" stroke-width="1" />
+                      </svg>
+                    </div>
+                  )}
+                />
+              </button>
+            )}
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
 
 const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
@@ -273,7 +314,6 @@ export default function Home() {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider apiKey={"0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"} chain={base}>
-          <ConnectAccount />
           <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
             </Box>
@@ -281,14 +321,14 @@ export default function Home() {
               <VStack spacing={6}>
                 <VStack spacing={0} textAlign="center">
                   <Text
-                    fontSize={["1.5em", "2em", "3em", "4em"]}
+                    fontSize={["2em", "3em", "4em", "5em"]}
                     fontWeight="600"
                     color={COINBASE_BLUE}
                   >
-                    0xCafeBabe
+                    cafebabe
                   </Text>
                   <Text
-                    fontSize={["1.25em", "1.75em", "2.5em", "3em"]}
+                    fontSize={["1em", "1.25em", "1.5em", "1.75em"]}
                     fontWeight="600"
                     color={COINBASE_BLUE}
                     opacity={0.8}
@@ -299,7 +339,7 @@ export default function Home() {
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
                   <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
                   {!account ? (
-                    <Button colorScheme="teal" onClick={onOpen}>Connect Wallet</Button>
+                    <AccountConnect />
                   ) : (
                     <>
                       <HStack justifyContent="center" mb={2}>
