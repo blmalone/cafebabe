@@ -14,7 +14,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import SelectWalletModal from "./components/Modal";
-import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopAbi";
+import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 import { ethers } from "ethers";
 
 const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
