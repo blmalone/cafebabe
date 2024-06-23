@@ -65,14 +65,14 @@ const AccountConnect = () => {
                   loadingComponent={(
                     <div className="h-8 w-8">
                       <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="yellow" stroke="yellow" stroke-width="1" />
+                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="yellow" stroke="yellow" strokeWidth="1" />
                       </svg>
                     </div>
                   )}
                   defaultComponent={(
                     <div className="h-8 w-8">
                       <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="green" stroke="green" stroke-width="1" />
+                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="green" stroke="green" strokeWidth="1" />
                       </svg>
                     </div>
                   )}
@@ -106,23 +106,6 @@ export default function Home() {
 
   const toHex = (num: number) => {
     return "0x" + num.toString(16);
-  };
-
-  const connectWithProvider = async (provider: any) => {
-    try {
-      setProvider(provider);
-      const accounts = await provider.request({ method: "eth_requestAccounts" });
-      if (accounts) {
-        setAccount(accounts[0]);
-      }
-      await provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: toHex(BASE_CHAIN_ID) }],
-      });
-      setChainId(BASE_CHAIN_ID);
-    } catch (error: any) {
-      setError(error.message);
-    }
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -391,11 +374,6 @@ export default function Home() {
                 )}
               </VStack>
             </Center>
-            <SelectWalletModal
-              isOpen={isOpen}
-              closeModal={onClose}
-              connectWithProvider={connectWithProvider}
-            />
           </Container>
         </OnchainKitProvider>
       </QueryClientProvider>
