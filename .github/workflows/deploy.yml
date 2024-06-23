@@ -35,7 +35,7 @@ jobs:
           cd web  
           yarn install
 
-      - name: Build with Next.js
+      - name: Build
         run: |
           cd web
           yarn build
