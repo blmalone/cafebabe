@@ -4,6 +4,7 @@
   "scripts": {
     "clean": "rm -rf dist && rm -rf .parcel-cache && rm -rf .cache",
     "crazy-clean": "yarn run clean && rm -rf node_modules",
+    "go-crazy": "yarn crazy-clean && yarn install && yarn start",
     "start": "parcel public/index.html --port 3000",
     "build": "parcel build public/index.html --no-cache"
   },
