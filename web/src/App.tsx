@@ -16,6 +16,34 @@ import {
 import SelectWalletModal from "./components/Modal";
 import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 import { ethers } from "ethers";
+// import { OnchainKitProvider } from '@coinbase/onchainkit';
+// import { Avatar } from '@coinbase/onchainkit/esm/identity';
+import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { base, baseSepolia } from 'wagmi/chains';
+import { coinbaseWallet } from 'wagmi/connectors';
+import { OnchainKitProvider } from "@coinbase/onchainkit";
+
+
+const rpcUrl = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P";
+const baseUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base/');
+const baseSepoliaUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base-sepolia/');
+
+const wagmiConfig = createConfig({
+  chains: [base, baseSepolia],
+  connectors: [
+    coinbaseWallet({
+      appName: 'cafebabe',
+      preference: 'all', // Setting this as all gives you the QR code for scanning with Coinbase wallet.
+    }),
+  ],
+  ssr: true,
+  transports: {
+    [baseSepolia.id]: http(baseSepoliaUrl),
+    [base.id]: http(baseUrl),
+  },
+});
 
 const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
@@ -239,89 +267,98 @@ export default function Home() {
     }
   }, [provider]);
 
+  const queryClient = new QueryClient();
+  // <Avatar address="0x838aD0EAE54F99F1926dA7C3b6bFbF617389B4D9" />
   return (
-    <Container maxW="container.md" centerContent>
-      <Box position="absolute" top={4} right={4}>
-      </Box>
-      <Center h="100vh">
-        <VStack spacing={6}>
-          <VStack spacing={0} textAlign="center">
-            <Text
-              fontSize={["1.5em", "2em", "3em", "4em"]}
-              fontWeight="600"
-              color={COINBASE_BLUE}
-            >
-              0xCafeBabe
-            </Text>
-            <Text
-              fontSize={["1.25em", "1.75em", "2.5em", "3em"]}
-              fontWeight="600"
-              color={COINBASE_BLUE}
-              opacity={0.8}
-            >
-              Let's buy a coffee on Base
-            </Text>
-          </VStack>
-          <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
-            <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
-            {!account ? (
-              <Button colorScheme="teal" onClick={onOpen}>Connect Wallet</Button>
-            ) : (
-              <>
-                <HStack justifyContent="center" mb={2}>
-                  <Text>{`Connection Status: `}</Text>
-                  {account ? (
-                    <CheckCircleIcon color="green" />
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <OnchainKitProvider apiKey={"0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"} chain={base}>
+          <ConnectAccount />
+          <Container maxW="container.md" centerContent>
+            <Box position="absolute" top={4} right={4}>
+            </Box>
+            <Center h="100vh">
+              <VStack spacing={6}>
+                <VStack spacing={0} textAlign="center">
+                  <Text
+                    fontSize={["1.5em", "2em", "3em", "4em"]}
+                    fontWeight="600"
+                    color={COINBASE_BLUE}
+                  >
+                    0xCafeBabe
+                  </Text>
+                  <Text
+                    fontSize={["1.25em", "1.75em", "2.5em", "3em"]}
+                    fontWeight="600"
+                    color={COINBASE_BLUE}
+                    opacity={0.8}
+                  >
+                    Let's buy a coffee on Base
+                  </Text>
+                </VStack>
+                <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
+                  <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
+                  {!account ? (
+                    <Button colorScheme="teal" onClick={onOpen}>Connect Wallet</Button>
                   ) : (
-                    <WarningIcon color="#cd5700" />
+                    <>
+                      <HStack justifyContent="center" mb={2}>
+                        <Text>{`Connection Status: `}</Text>
+                        {account ? (
+                          <CheckCircleIcon color="green" />
+                        ) : (
+                          <WarningIcon color="#cd5700" />
+                        )}
+                      </HStack>
+                      <Tooltip label={account} placement="right">
+                        <Text>{`Account: ${account}`}</Text>
+                      </Tooltip>
+                      <Text>{`Network: Base`}</Text>
+                      <Button mt={2} colorScheme="red" onClick={disconnect}>Disconnect</Button>
+                    </>
                   )}
-                </HStack>
-                <Tooltip label={account} placement="right">
-                  <Text>{`Account: ${account}`}</Text>
-                </Tooltip>
-                <Text>{`Network: Base`}</Text>
-                <Button mt={2} colorScheme="red" onClick={disconnect}>Disconnect</Button>
-              </>
-            )}
-          </Box>
-  
-          {account && (
-            <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
-              <VStack spacing={4}>
-                <Input
-                  placeholder={placeholder}
-                  maxLength={20}
-                  onChange={handleAmountChange}
-                  w="200px"
-                />
-                <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
-                  Pay
-                </Button>
+                </Box>
+
+                {account && (
+                  <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
+                    <VStack spacing={4}>
+                      <Input
+                        placeholder={placeholder}
+                        maxLength={20}
+                        onChange={handleAmountChange}
+                        w="200px"
+                      />
+                      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+                        Pay
+                      </Button>
+                    </VStack>
+                  </Box>
+                )}
+                {freeCoffeeMessage && (
+                  <Box color="blue.500" mt="4" textAlign="center">
+                    {freeCoffeeMessage}
+                  </Box>
+                )}
+                {error && (
+                  <Box color="red.500" mt="4" textAlign="center">
+                    {error.message}
+                  </Box>
+                )}
+                {transactionHash && (
+                  <Box color="green.500" mt="4" textAlign="center">
+                    {`Transaction Hash: ${transactionHash}`}
+                  </Box>
+                )}
               </VStack>
-            </Box>
-          )}
-          {freeCoffeeMessage && (
-            <Box color="blue.500" mt="4" textAlign="center">
-              {freeCoffeeMessage}
-            </Box>
-          )}
-          {error && (
-            <Box color="red.500" mt="4" textAlign="center">
-              {error.message}
-            </Box>
-          )}
-          {transactionHash && (
-            <Box color="green.500" mt="4" textAlign="center">
-              {`Transaction Hash: ${transactionHash}`}
-            </Box>
-          )}
-        </VStack>
-      </Center>
-      <SelectWalletModal
-        isOpen={isOpen}
-        closeModal={onClose}
-        connectWithProvider={connectWithProvider}
-      />
-    </Container>
+            </Center>
+            <SelectWalletModal
+              isOpen={isOpen}
+              closeModal={onClose}
+              connectWithProvider={connectWithProvider}
+            />
+          </Container>
+        </OnchainKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
