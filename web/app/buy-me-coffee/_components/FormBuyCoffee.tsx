@@ -20,7 +20,7 @@ const initFields = {
 };
 
 type Fields = {
-  name: number;
+  amount: number;
 };
 
 type FormBuyCoffeeProps = {
@@ -43,7 +43,7 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
       contract,
       name: 'pay',
       arguments: [fields.amount],
-      enableSubmit: fields.amount !== '',
+      enableSubmit: fields.amount !== 0,
       reset,
     });
 
@@ -51,7 +51,7 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
     return (
       <TransactionSteps
         transactionStep={transactionState}
-        coffeeCount={fields.coffeeCount}
+        amount={fields.amount}
         resetContractForms={resetContractForms}
         gasCost={GAS_COST}
       />
@@ -71,7 +71,7 @@ function FormBuyCoffee({ refetchMemos }: FormBuyCoffeeProps) {
               id="amount"
               placeholder="amount to charge (USDC)"
               // eslint-disable-next-line react-perf/jsx-no-new-function-as-prop
-              onChange={(evt) => setField('amount', evt.target.value)}
+              onChange={(evt) => setField('amount', parseFloat(evt.target.value))}
               disabled={disabled}
               required
             />

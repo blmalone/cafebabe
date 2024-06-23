@@ -12,8 +12,8 @@ export enum TransactionStates {
 
 type AsyncFunction<Args extends unknown[], ReturnType> = (...args: Args) => Promise<ReturnType>;
 
-const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
-const COFFEE_SHOP_ADDRESS = '0x9487C5e6eF2aeb9e684566F785359712EAF7A17F';
+const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' as `0x${string}`;
+const COFFEE_SHOP_ADDRESS = '0x9487C5e6eF2aeb9e684566F785359712EAF7A17F' as `0x${string}`;
 const BASE_CHAIN_ID = 8453;
 
 export default function useSmartContractForms({
@@ -35,14 +35,14 @@ export default function useSmartContractForms({
   const [signedData, setSignedData] = useState<string | null>(null);
 
   const { address: account } = useAccount();
-  const { signTypedDataAsync, error: signTypedDataError, isLoading: isSigning } = useSignTypedData();
+  const { signTypedDataAsync, error: signTypedDataError } = useSignTypedData();
 
   const amountToCharge = args[0];
 
   const canAfford = useLoggedInUserCanAfford(gasFee);
 
-  console.log("<OB> functionName: " + functionName)
-  console.log(`<OB> args: ${args}`)
+  console.log("<OB> functionName: " + functionName);
+  console.log(`<OB> args: ${args}`);
 
   const { data: contractRequest, error: simulateContractError, refetch: refetchSimulateContract } = useSimulateContract({
     address: contract.status === 'ready' ? contract.address : undefined,
@@ -55,9 +55,9 @@ export default function useSmartContractForms({
     value: gasFee,
   });
 
-  console.log("<OB> contractRequest " + contractRequest)
-  console.log("<OB> simulateContractError " + simulateContractError)
-  console.log("<OB> refetchSimulateContract " + refetchSimulateContract)
+  console.log("<OB> contractRequest " + contractRequest);
+  console.log("<OB> simulateContractError " + simulateContractError);
+  console.log("<OB> refetchSimulateContract " + refetchSimulateContract);
 
   const {
     writeContract,
@@ -73,7 +73,7 @@ export default function useSmartContractForms({
     },
   });
 
-  const disabled = contract.status !== 'ready' || writeContractStatus === 'pending' || !canAfford || isSigning;
+  const disabled = contract.status !== 'ready' || writeContractStatus === 'pending' || !canAfford;
 
   const handleSignTypedData = useCallback(async (onSuccess: (signedData: string) => void) => {
     const domain = {
@@ -132,10 +132,10 @@ export default function useSmartContractForms({
 
       // FIGURE OUT how to pass in r s v to simulate
       await handleSignTypedData(async (signedData) => {
-        console.log("<OB> got signed data: " + signedData)
+        console.log("<OB> got signed data: " + signedData);
 
-       const result = parseSignature(signedData);
-       console.log(result)
+        const result = parseSignature(signedData as `0x${string}`);
+        console.log(result);
 
         try {
           const { data: simulationData, error: simulationError } = await refetchSimulateContract();
@@ -169,16 +169,15 @@ export default function useSmartContractForms({
     async function onTransactionReceiptStatus() {
       if (!dataHash) return;
 
-      if (transactionReceiptStatus === 'error') {
-        if (
-          writeContractError instanceof TransactionExecutionError &&
-          writeContractError.message.toLowerCase().includes('out of gas')
-        ) {
-          setTransactionState(TransactionStates.OUT_OF_GAS);
-        } else {
-          setTransactionState(null);
-        }
-      }
+      // if (transactionReceiptStatus === 'error') {
+      //   if (
+      //     writeContractError.message.toLowerCase().includes('out of gas')
+      //   ) {
+      //     setTransactionState(TransactionStates.OUT_OF_GAS);
+      //   } else {
+      //     setTransactionState(null);
+      //   }
+      // }
 
       if (transactionReceiptStatus === 'success') {
         setTransactionState(TransactionStates.COMPLETE);

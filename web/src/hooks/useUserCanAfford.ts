@@ -1,4 +1,5 @@
 import { useAccount, useBalance } from 'wagmi';
+import { useEffect, useState } from 'react';
 
 /**
  * Utility to see if an address balance can afford to transact for a certain amount
@@ -8,12 +9,36 @@ import { useAccount, useBalance } from 'wagmi';
  * @returns {boolean}
  */
 export function useAddressCanAfford(address: `0x${string}`, amount: bigint) {
-  const result = useBalance({
-    address,
+  const { data, isError, isLoading, error } = useBalance({
+    address: address,
   });
-  
-  if (!result.data) return false;
-  return amount <= result.data.value;
+
+  useEffect(() => {
+    console.log("isError:", isError);
+    console.log("isLoading:", isLoading);
+    console.log("data:", data);
+    if (isError && error) {
+      console.error('Error fetching balance:', error);
+    }
+  }, [isError, isLoading, data, error]);
+
+  if (isLoading) {
+    // You might want to handle the loading state in your component
+    console.log('Loading balance data...');
+    return false;
+  }
+
+  if (isError) {
+    console.error('Error fetching balance');
+    return false;
+  }
+
+  if (!data) {
+    console.log('No balance data available');
+    return false;
+  }
+
+  return amount <= data.value;
 }
 
 /**

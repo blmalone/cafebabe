@@ -388,6 +388,6 @@ const COFFEE_SHOP_ABI =
       "stateMutability": "view",
       "type": "function"
     }
-];
+] as const;
 
 export default COFFEE_SHOP_ABI;
