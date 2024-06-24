@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract, useWriteContract, createConfig, http, useSwitchChain } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
+import './styles/fonts.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { USDC_ABI } from "./abi/USDC";
@@ -52,12 +53,19 @@ export default function Home() {
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<string>("");
   const [freeCoffeeMessage, setFreeCoffeeMessage] = useState<string>("");
-  const toast = useToast();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amt = e.target.value;
-    setAmount(amt);
+    const value = e.target.value;
+    const regex = /^\d*\.?\d*$/;
+
+    if (regex.test(value) || value === "") {
+      setAmount(value);
+      setError("");
+    } else {
+      setError("Please enter a valid amount");
+    }
   };
+
 
   // const checkUSDCBalance = async (signer: ethers.Signer, amountInWei: ethers.BigNumber) => {
   //   const usdcContract = new ethers.Contract(
@@ -281,13 +289,12 @@ export default function Home() {
     };
 
     return (
-      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+      <Button colorScheme="teal" className="cafebabe-title" onClick={payWithTransaction} isDisabled={!amount}>
         Pay
       </Button>);
   }
 
   const queryClient = new QueryClient();
-  // <Avatar address="0x838aD0EAE54F99F1926dA7C3b6bFbF617389B4D9" />
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
@@ -302,6 +309,7 @@ export default function Home() {
                     fontSize={["2em", "3em", "4em", "5em"]}
                     fontWeight="600"
                     color={COINBASE_BLUE}
+                    className="cafebabe-title"
                   >
                     cafebabe
                   </Text>
@@ -310,38 +318,48 @@ export default function Home() {
                     fontWeight="600"
                     color={COINBASE_BLUE}
                     opacity={0.8}
+                    className="cafebabe-title"
                   >
-                    Let's buy a coffee on Base
+                    loyalty, rewarded
                   </Text>
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
-                  <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
+                  <Text fontSize="small" className="cafebabe-title" mb={2}>Connection Information</Text>
                   <AccountConnect />
                 </Box>
 
                 {accountStatus === 'connected' && (
-                  <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
-                    <VStack spacing={4}>
-                      <Input
-                        placeholder={"dollars"}
-                        maxLength={20}
-                        onChange={handleAmountChange}
-                        w="300px"
-                      />
-                      {/* <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
-                        Pay
-                      </Button> */}
-                      <PayButton />
-                    </VStack>
-                  </Box>)}
+                  <>
+                    <Box w="full" p={4} borderWidth="1px" borderRadius="lg" textAlign="center" overflow="hidden" bg="blue.50">
+                      <Text fontSize="small" className="cafebabe-title" mb={2}>Order total</Text>
+                      <VStack spacing={4}>
+                        <Input
+                          className="cafebabe-title"
+                          placeholder={"amount"}
+                          maxLength={20}
+                          onChange={handleAmountChange}
+                          w="300px"
+                        />
+                        <PayButton />
+                      </VStack>
+                    </Box>
+
+                    <Box w="full" p={4} borderWidth="1px" borderRadius="lg" textAlign="center" overflow="hidden" bg="gray.50" mt={4}>
+                      <Text fontSize="medium" className="cafebabe-title" mb={2}>Account Information</Text>
+                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Score</b> <br />92%</Text>
+                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Last Visit</b> <br />10 days ago</Text>
+                    </Box>
+                  </>
+                )}
+
                 {freeCoffeeMessage && (
                   <Box color="blue.500" mt="4" textAlign="center">
                     {freeCoffeeMessage}
                   </Box>
                 )}
                 {error && (
-                  <Box color="red.500" mt="4" textAlign="center">
-                    {error.message}
+                  <Box color="#FF7074" mt="4" textAlign="center">
+                    {error}
                   </Box>
                 )}
                 {transactionHash && (

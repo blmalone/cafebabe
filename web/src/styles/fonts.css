@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'CafeBabeFont';
+    src: url('../fonts/Coinbase_Sans-Regular-web-1.32.woff2') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  .cafebabe-title {
+    font-family: 'CafeBabeFont', sans-serif;
+  }
+  
