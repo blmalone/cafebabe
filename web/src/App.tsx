@@ -7,7 +7,6 @@ import {
   VStack,
   Center,
   Container,
-  useToast,
 } from "@chakra-ui/react";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +14,7 @@ import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId,
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
 import './styles/fonts.css';
+import './styles/connections.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { USDC_ABI } from "./abi/USDC";
@@ -302,7 +302,7 @@ export default function Home() {
           <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
             </Box>
-            <Center h="100vh">
+            <Center className={accountStatus === 'connected' ? 'connected' : 'not-connected'}>
               <VStack spacing={6}>
                 <VStack spacing={0} textAlign="center">
                   <Text
@@ -329,7 +329,7 @@ export default function Home() {
                 </Box>
 
                 {accountStatus === 'connected' && (
-                  <>
+                  <VStack>
                     <Box w="full" p={4} borderWidth="1px" borderRadius="lg" textAlign="center" overflow="hidden" bg="blue.50">
                       <Text fontSize="small" className="cafebabe-title" mb={2}>Order total</Text>
                       <VStack spacing={4}>
@@ -349,7 +349,7 @@ export default function Home() {
                       <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Score</b> <br />92%</Text>
                       <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Last Visit</b> <br />10 days ago</Text>
                     </Box>
-                  </>
+                  </VStack>
                 )}
 
                 {freeCoffeeMessage && (
