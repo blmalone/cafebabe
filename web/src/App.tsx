@@ -312,11 +312,6 @@ export default function Home() {
           <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
             </Box>
-            <head>
-  <title>Onramp</title>
-  <script src="https://js.stripe.com/v3/"></script>
-  <script src="https://crypto-js.stripe.com/crypto-onramp-outer.js"></script>
-</head>
             <Center className={accountStatus === 'connected' ? 'connected' : 'not-connected'}>
               <VStack spacing={6}>
                 <VStack spacing={0} textAlign="center">
