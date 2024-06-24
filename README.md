@@ -1,5 +1,3 @@
-# cafebabe
+![cafebabe](https://github.com/blmalone/cafebabe/assets/15608778/e91d7eb8-0e74-45ca-bc1c-187e9ea49cec)
 
-![cafebabe](https://github.com/blmalone/cafebabe/assets/15608778/91726e07-8b2c-4c5f-91b3-8d212fd5f641)
-
-onchain system for cafes to accept crypto payments with built in loyalty mechanisms.
+An onchain system for cafes to accept crypto payments with built in loyalty mechanisms.
