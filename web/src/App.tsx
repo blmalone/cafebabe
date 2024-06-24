@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { CheckCircleIcon, WarningIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  HStack,
   Input,
   Text,
-  Tooltip,
   VStack,
-  useDisclosure,
   Center,
   Container,
   useToast,
 } from "@chakra-ui/react";
-import SelectWalletModal from "./components/Modal";
 import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 import { ethers } from "ethers";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
-import { Avatar } from '@coinbase/onchainkit/esm/identity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http, useAccount, useDisconnect } from 'wagmi';
+import { WagmiProvider, createConfig, http, useAccount, useDisconnect, useSignTypedData } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
 import { coinbaseWallet } from 'wagmi/connectors';
@@ -49,75 +43,67 @@ const wagmiConfig = createConfig({
 const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
 const USDC_DECIMALS = 6;
-const BASE_CHAIN_ID = 8453;
 const COINBASE_BLUE = "#0052ff";
 
 export default function Home() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [provider, setProvider] = useState<any>();
+  const [provider] = useState<any>();
   const [accountStatus, setAccountStatus] = useState<string>("disconnected");
   const [error, setError] = useState<string>("");
-  const [chainId, setChainId] = useState<number>();
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<string>("");
   const [freeCoffeeMessage, setFreeCoffeeMessage] = useState<string>("");
-  const [placeholder, setPlaceholder] = useState<string>("Input Total (in dollars)");
   const toast = useToast();
-
-  const toHex = (num: number) => {
-    return "0x" + num.toString(16);
-  };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const amt = e.target.value;
     setAmount(amt);
   };
 
-  const signPermit = async (signer: ethers.Signer, amount: ethers.BigNumber) => {
-    const domain = {
-      name: "USD Coin",
-      version: "2",
-      chainId: (await signer.provider!.getNetwork()).chainId,
-      verifyingContract: USDC_ADDRESS,
-    };
+  // const signPermit = async (signer: ethers.Signer, amount: ethers.BigNumber) => {
+  //   const domain = {
+  //     name: "USD Coin",
+  //     version: "2",
+  //     chainId: (await signer.provider!.getNetwork()).chainId,
+  //     verifyingContract: USDC_ADDRESS,
+  //   };
 
-    const types = {
-      Permit: [
-        { name: "owner", type: "address" },
-        { name: "spender", type: "address" },
-        { name: "value", type: "uint256" },
-        { name: "nonce", type: "uint256" },
-        { name: "deadline", type: "uint256" },
-      ],
-    };
+  //   const types = {
+  //     Permit: [
+  //       { name: "owner", type: "address" },
+  //       { name: "spender", type: "address" },
+  //       { name: "value", type: "uint256" },
+  //       { name: "nonce", type: "uint256" },
+  //       { name: "deadline", type: "uint256" },
+  //     ],
+  //   };
 
-    const value = {
-      owner: account,
-      spender: COFFEE_SHOP_ADDRESS,
-      value: amount,
-      nonce: await new ethers.Contract(
-        USDC_ADDRESS,
-        ["function nonces(address owner) view returns (uint256)"],
-        signer
-      ).nonces(account),
-      deadline: Math.floor(Date.now() / 1000) + 60 * 20,
-    };
+  //   const value = {
+  //     owner: account,
+  //     spender: COFFEE_SHOP_ADDRESS,
+  //     value: amount,
+  //     nonce: await new ethers.Contract(
+  //       USDC_ADDRESS,
+  //       ["function nonces(address owner) view returns (uint256)"],
+  //       signer
+  //     ).nonces(account),
+  //     deadline: Math.floor(Date.now() / 1000) + 60 * 20,
+  //   };
 
-    const signature = await signer._signTypedData(domain, types, value);
-    const { v, r, s } = ethers.utils.splitSignature(signature);
+  //   const signature = await signer._signTypedData(domain, types, value);
+  //   const { v, r, s } = ethers.utils.splitSignature(signature);
 
-    return { value, v, r, s };
-  };
+  //   return { value, v, r, s };
+  // };
 
-  const checkUSDCBalance = async (signer: ethers.Signer, amountInWei: ethers.BigNumber) => {
-    const usdcContract = new ethers.Contract(
-      USDC_ADDRESS,
-      ["function balanceOf(address owner) view returns (uint256)"],
-      signer
-    );
-    const balance = await usdcContract.balanceOf(account);
-    return balance.gte(amountInWei);
-  };
+  // const checkUSDCBalance = async (signer: ethers.Signer, amountInWei: ethers.BigNumber) => {
+  //   const usdcContract = new ethers.Contract(
+  //     USDC_ADDRESS,
+  //     ["function balanceOf(address owner) view returns (uint256)"],
+  //     signer
+  //   );
+  //   const balance = await usdcContract.balanceOf(account);
+  //   return balance.gte(amountInWei);
+  // };
 
   const fetchExchangeRate = async (fromCurrency: string) => {
     const baseUrl = "https://api.coingecko.com/api/v3/simple/price";
@@ -127,89 +113,85 @@ export default function Home() {
     return data[ids].eth;
   };
 
-  const payWithTransaction = async () => {
-    if (accountStatus === 'disconnected' || !amount) return;
-    console.log("payWithTransaction")
+  // try {
+  //   const ethersProvider = new ethers.providers.Web3Provider(provider);
+  //   const signer = ethersProvider.getSigner();
+  //   const contract = new ethers.Contract(COFFEE_SHOP_ADDRESS, COFFEE_SHOP_ABI, signer);
 
-    try {
-      const ethersProvider = new ethers.providers.Web3Provider(provider);
-      const signer = ethersProvider.getSigner();
-      const contract = new ethers.Contract(COFFEE_SHOP_ADDRESS, COFFEE_SHOP_ABI, signer);
+  //   const amountInWei = ethers.utils.parseUnits(amount, USDC_DECIMALS);
+  //   let receipt;
 
-      const amountInWei = ethers.utils.parseUnits(amount, USDC_DECIMALS);
-      let receipt;
+  //   const hasEnoughUSDC = await checkUSDCBalance(signer, amountInWei);
 
-      const hasEnoughUSDC = await checkUSDCBalance(signer, amountInWei);
+  //   if (!hasEnoughUSDC) {
+  //     const rate = await fetchExchangeRate("usdc");
+  //     const ethAmount = ethers.utils.parseUnits((amount / rate).toString(), "ether");
 
-      if (!hasEnoughUSDC) {
-        const rate = await fetchExchangeRate("usdc");
-        const ethAmount = ethers.utils.parseUnits((amount / rate).toString(), "ether");
+  //     const tx = await signer.sendTransaction({
+  //       to: COFFEE_SHOP_ADDRESS,
+  //       value: ethAmount,
+  //     });
+  //     receipt = await tx.wait();
+  //     setTransactionHash(receipt.transactionHash);
+  //     toast({
+  //       title: "Payment successful",
+  //       description: "Payment made using ETH.",
+  //       status: "success",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   } else {
+  //     const { value, v, r, s } = await signPermit(signer, amountInWei);
 
-        const tx = await signer.sendTransaction({
-          to: COFFEE_SHOP_ADDRESS,
-          value: ethAmount,
-        });
-        receipt = await tx.wait();
-        setTransactionHash(receipt.transactionHash);
-        toast({
-          title: "Payment successful",
-          description: "Payment made using ETH.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      } else {
-        const { value, v, r, s } = await signPermit(signer, amountInWei);
+  //     const tx = await contract.pay(amountInWei, value.deadline, v, r, s);
+  //     receipt = await tx.wait();
+  //     setTransactionHash(receipt.transactionHash);
+  //   }
 
-        const tx = await contract.pay(amountInWei, value.deadline, v, r, s);
-        receipt = await tx.wait();
-        setTransactionHash(receipt.transactionHash);
-      }
+  //   let freeCoffeeGranted = false;
+  //   let numCoffees = 0;
+  //   let numCoffeesLeft = 0;
 
-      let freeCoffeeGranted = false;
-      let numCoffees = 0;
-      let numCoffeesLeft = 0;
+  //   for (const log of receipt.logs) {
+  //     try {
+  //       const parsedLog = contract.interface.parseLog(log);
+  //       if (parsedLog.name === "FreeCoffee") {
+  //         freeCoffeeGranted = true;
+  //         break;
+  //       } else if (parsedLog.name === "Payment") {
+  //         numCoffees = parsedLog.args.numCoffees.toNumber();
+  //         numCoffeesLeft = 9 - (numCoffees % 9);
+  //         numCoffees += 1;
+  //         var isNextCoffeeFree = (numCoffees % 9) === 0;
+  //       }
+  //     } catch (e) {
+  //     }
+  //   }
 
-      for (const log of receipt.logs) {
-        try {
-          const parsedLog = contract.interface.parseLog(log);
-          if (parsedLog.name === "FreeCoffee") {
-            freeCoffeeGranted = true;
-            break;
-          } else if (parsedLog.name === "Payment") {
-            numCoffees = parsedLog.args.numCoffees.toNumber();
-            numCoffeesLeft = 9 - (numCoffees % 9);
-            numCoffees += 1;
-            var isNextCoffeeFree = (numCoffees % 9) === 0;
-          }
-        } catch (e) {
-        }
-      }
+  //   if (freeCoffeeGranted) {
+  //     setFreeCoffeeMessage("Congratulations! You got a free coffee!");
+  //   } else if (isNextCoffeeFree) {
+  //     setFreeCoffeeMessage(`Payment successful. Your next coffee is free!.`);
+  //   } else if (numCoffees > 0) {
+  //     setFreeCoffeeMessage(`Payment successful. You have ${numCoffeesLeft} coffee${numCoffeesLeft === 1 ? '' : 's'} left until your next free one.`);
+  //   } else {
+  //     setFreeCoffeeMessage("Payment successful. Enjoy your coffee!");
+  //   }
 
-      if (freeCoffeeGranted) {
-        setFreeCoffeeMessage("Congratulations! You got a free coffee!");
-      } else if (isNextCoffeeFree) {
-        setFreeCoffeeMessage(`Payment successful. Your next coffee is free!.`);
-      } else if (numCoffees > 0) {
-        setFreeCoffeeMessage(`Payment successful. You have ${numCoffeesLeft} coffee${numCoffeesLeft === 1 ? '' : 's'} left until your next free one.`);
-      } else {
-        setFreeCoffeeMessage("Payment successful. Enjoy your coffee!");
-      }
+  // } catch (error: any) {
+  //   let errorMessage = error.message;
 
-    } catch (error: any) {
-      let errorMessage = error.message;
+  //   if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+  //     const errorData = error.data?.originalError?.data;
+  //     if (errorData) {
+  //       const reason = ethers.utils.toUtf8String('0x' + errorData.slice(138));
+  //       errorMessage = `Transaction failed: ${reason}`;
+  //     }
+  //   }
 
-      if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
-        const errorData = error.data?.originalError?.data;
-        if (errorData) {
-          const reason = ethers.utils.toUtf8String('0x' + errorData.slice(138));
-          errorMessage = `Transaction failed: ${reason}`;
-        }
-      }
-
-      setError(new Error(errorMessage));
-    }
-  };
+  //   setError(new Error(errorMessage));
+  // }
+  //}
 
   const AccountConnect = () => {
     const { address, status } = useAccount();
@@ -247,6 +229,54 @@ export default function Home() {
         })()}
       </div>
     );
+  }
+
+  const PayButton = () => {
+    const { signTypedDataAsync } = useSignTypedData();
+
+    const payWithTransaction = async () => {
+      console.log("payWithTransaction called");
+      // const { address: account } = useAccount();      
+
+      // const domain = {
+      //   name: 'USD Coin',
+      //   chainId: base.id,
+      //   verifyingContract: USDC_ADDRESS,
+      //   version: '2',
+      // };
+      const types = {
+        Permit: [
+          { name: "owner", type: "address" },
+          { name: "spender", type: "address" },
+          { name: "value", type: "uint256" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      };
+      const message = {
+        owner: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        spender: COFFEE_SHOP_ADDRESS,
+        value: 1, // Replace with actual value
+        nonce: 1, // Replace with actual nonce
+        deadline: Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from now
+      };
+
+      try {
+        const signatureResult = await signTypedDataAsync({
+          types,
+          primaryType: 'Permit',
+          message
+        });
+        console.log("signatureResult: ", signatureResult);
+      } catch (error) {
+        console.error("Error signing typed data: ", error);
+      }
+    };
+
+    return (
+      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+        Pay
+      </Button>);
   }
 
   const queryClient = new QueryClient();
@@ -291,9 +321,10 @@ export default function Home() {
                         onChange={handleAmountChange}
                         w="300px"
                       />
-                      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+                      {/* <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
                         Pay
-                      </Button>
+                      </Button> */}
+                      <PayButton />
                     </VStack>
                   </Box>)}
                 {freeCoffeeMessage && (
