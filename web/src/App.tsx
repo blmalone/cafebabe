@@ -9,6 +9,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
+import { Avatar, Address } from '@coinbase/onchainkit/esm/identity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract, useWriteContract, createConfig, http, useSwitchChain } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
@@ -50,6 +51,7 @@ export default function Home() {
   const [provider] = useState<any>();
   const [accountStatus, setAccountStatus] = useState<string>("disconnected");
   const [error, setError] = useState<string>("");
+  const [connectedAddress, setConnectedAddress] = useState<string>("");
   const [loyaltyMessage, setLoyaltyMessage] = useState<string>("");
   const [lastVisit, setLastVisit] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
@@ -168,10 +170,12 @@ export default function Home() {
         setAccountStatus('connected');
         setLoyaltyMessage("There's a 10% chance your next coffee will be free");
         setLastVisit("10 days ago");
+        setConnectedAddress(address);
       } else if (status === 'disconnected') {
         setLoyaltyMessage("");
         setAccountStatus('disconnected');
         setLastVisit("");
+        setConnectedAddress("");
       }
     }, [status]);
 
@@ -189,7 +193,7 @@ export default function Home() {
                   type="button"
                   onClick={() => disconnect()}
                   className="bg-red-500 text-white px-4 py-2 rounded"
-                  style={{ backgroundColor: '#FF7074', color: 'white' }} // Inline styles as a fallback
+                  style={{ backgroundColor: '#FF7074', color: 'white', marginTop: 10 }} // Inline styles as a fallback
                 >
                   Disconnect
                 </button>
@@ -305,6 +309,7 @@ export default function Home() {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider apiKey={"0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"} chain={base}>
+          {/* <Avatar address={connectedAddress}/> */}
           <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
             </Box>
@@ -330,7 +335,8 @@ export default function Home() {
                   </Text>
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
-                  <Text fontSize="small" className="cafebabe-title" mb={2}>Connection</Text>
+                  {accountStatus === 'disconnected' && <Text fontSize="small" className="cafebabe-title" mb={2}>Connection</Text>}
+                  {connectedAddress && <b><Address className="cafebabe-title" address={connectedAddress} /></b>}
                   <AccountConnect />
                 </Box>
 
