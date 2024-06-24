@@ -309,10 +309,14 @@ export default function Home() {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider apiKey={"0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"} chain={base}>
-          {/* <Avatar address={connectedAddress}/> */}
           <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
             </Box>
+            <head>
+  <title>Onramp</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://crypto-js.stripe.com/crypto-onramp-outer.js"></script>
+</head>
             <Center className={accountStatus === 'connected' ? 'connected' : 'not-connected'}>
               <VStack spacing={6}>
                 <VStack spacing={0} textAlign="center">
@@ -336,6 +340,23 @@ export default function Home() {
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
                   {accountStatus === 'disconnected' && <Text fontSize="small" className="cafebabe-title" mb={2}>Connection</Text>}
+                  {connectedAddress && <b><Center><Avatar
+                    loadingComponent={(
+                      <div className="h-8 w-8">
+                        <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="yellow" stroke="yellow" stroke-width="1" />
+                        </svg>
+                      </div>
+                    )}
+                    defaultComponent={(
+                      <div className="h-8 w-8">
+                        <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="green" stroke="green" stroke-width="1" />
+                        </svg>
+                      </div>
+                    )}
+                    address={connectedAddress} />
+                  </Center></b>}
                   {connectedAddress && <b><Address className="cafebabe-title" address={connectedAddress} /></b>}
                   <AccountConnect />
                 </Box>
@@ -358,7 +379,7 @@ export default function Home() {
 
                     <Box w="full" p={4} borderWidth="1px" borderRadius="lg" textAlign="center" overflow="hidden" bg="gray.50" mt={4}>
                       <Text fontSize="medium" className="cafebabe-title" mb={2}><b>Account</b></Text>
-                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Scheme</b><br/>{loyaltyMessage}<br/></Text>
+                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Scheme</b><br />{loyaltyMessage}<br /></Text>
                       <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Last Visit</b> <br />{lastVisit}</Text>
                     </Box>
                   </VStack>
