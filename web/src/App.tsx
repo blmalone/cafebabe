@@ -13,11 +13,12 @@ import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 import { ethers } from "ethers";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http, useAccount, useDisconnect, useSignTypedData } from 'wagmi';
+import { WagmiProvider, createConfig, http, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
+import { USDC_ABI } from "./abi/USDC";
 
 
 const rpcUrl = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P";
@@ -233,17 +234,29 @@ export default function Home() {
 
   const PayButton = () => {
     const { signTypedDataAsync } = useSignTypedData();
+    const { address } = useAccount();
+    const chainId = useChainId();
+    const nonce = useReadContract({
+      abi: USDC_ABI,
+      address: USDC_ADDRESS,
+      functionName: 'nonces',
+      args: [address],
+    })
+
+    console.log("address: ", address);
+    console.log("chainId: ", chainId);
+    console.log("nonce: ", nonce.data);
 
     const payWithTransaction = async () => {
       console.log("payWithTransaction called");
-      // const { address: account } = useAccount();      
 
-      // const domain = {
-      //   name: 'USD Coin',
-      //   chainId: base.id,
-      //   verifyingContract: USDC_ADDRESS,
-      //   version: '2',
-      // };
+      const domain = {
+        name: 'USD Coin',
+        chainId: chainId,
+        verifyingContract: USDC_ADDRESS as `0x${string}`,
+        version: '2',
+      };
+
       const types = {
         Permit: [
           { name: "owner", type: "address" },
@@ -254,18 +267,19 @@ export default function Home() {
         ],
       };
       const message = {
-        owner: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-        spender: COFFEE_SHOP_ADDRESS,
-        value: 1, // Replace with actual value
-        nonce: 1, // Replace with actual nonce
-        deadline: Math.floor(Date.now() / 1000) + 60 * 20, // 20 minutes from now
+        owner: address,
+        spender: COFFEE_SHOP_ADDRESS, // TODO: Replace with current proxy address for coffee shop upon registration.
+        value: amount, // Replace with actual value
+        nonce: nonce.data, // Replace with actual nonce
+        deadline: Math.floor(Date.now() / 1000) + 60 * 30, // 30 minutes from now
       };
 
       try {
         const signatureResult = await signTypedDataAsync({
           types,
           primaryType: 'Permit',
-          message
+          message,
+          domain
         });
         console.log("signatureResult: ", signatureResult);
       } catch (error) {
