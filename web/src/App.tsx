@@ -50,6 +50,8 @@ export default function Home() {
   const [provider] = useState<any>();
   const [accountStatus, setAccountStatus] = useState<string>("disconnected");
   const [error, setError] = useState<string>("");
+  const [loyaltyMessage, setLoyaltyMessage] = useState<string>("");
+  const [lastVisit, setLastVisit] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<string>("");
   const [freeCoffeeMessage, setFreeCoffeeMessage] = useState<string>("");
@@ -164,8 +166,12 @@ export default function Home() {
     useEffect(() => {
       if (status === 'connected') {
         setAccountStatus('connected');
+        setLoyaltyMessage("There's a 10% chance your next coffee will be free");
+        setLastVisit("10 days ago");
       } else if (status === 'disconnected') {
+        setLoyaltyMessage("");
         setAccountStatus('disconnected');
+        setLastVisit("");
       }
     }, [status]);
 
@@ -324,7 +330,7 @@ export default function Home() {
                   </Text>
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
-                  <Text fontSize="small" className="cafebabe-title" mb={2}>Connection Information</Text>
+                  <Text fontSize="small" className="cafebabe-title" mb={2}>Connection</Text>
                   <AccountConnect />
                 </Box>
 
@@ -345,9 +351,9 @@ export default function Home() {
                     </Box>
 
                     <Box w="full" p={4} borderWidth="1px" borderRadius="lg" textAlign="center" overflow="hidden" bg="gray.50" mt={4}>
-                      <Text fontSize="medium" className="cafebabe-title" mb={2}>Account Information</Text>
-                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Score</b> <br />92%</Text>
-                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Last Visit</b> <br />10 days ago</Text>
+                      <Text fontSize="medium" className="cafebabe-title" mb={2}><b>Account</b></Text>
+                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Loyalty Scheme</b><br/>{loyaltyMessage}<br/></Text>
+                      <Text marginTop={5} fontSize="small" className="cafebabe-title"><b>Last Visit</b> <br />{lastVisit}</Text>
                     </Box>
                   </VStack>
                 )}
