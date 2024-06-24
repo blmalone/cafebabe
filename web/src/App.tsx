@@ -45,46 +45,6 @@ const wagmiConfig = createConfig({
   },
 });
 
-const AccountConnect = () => {
-  const { address, status } = useAccount();
-  const { disconnect } = useDisconnect();
-
-  return (
-    <div className="flex flex-grow">
-      {(() => {
-        if (status === 'disconnected') {
-          return <ConnectAccount />;
-        }
-
-        return (
-          <div className="flex h-8 w-8 items-center justify-center">
-            {address && (
-              <button type="button" onClick={() => disconnect()}>
-                <Avatar
-                  address={address}
-                  loadingComponent={(
-                    <div className="h-8 w-8">
-                      <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="yellow" stroke="yellow" strokeWidth="1" />
-                      </svg>
-                    </div>
-                  )}
-                  defaultComponent={(
-                    <div className="h-8 w-8">
-                      <svg width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <polygon points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6" fill="green" stroke="green" strokeWidth="1" />
-                      </svg>
-                    </div>
-                  )}
-                />
-              </button>
-            )}
-          </div>
-        );
-      })()}
-    </div>
-  );
-}
 
 const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
@@ -95,7 +55,7 @@ const COINBASE_BLUE = "#0052ff";
 export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [provider, setProvider] = useState<any>();
-  const [account, setAccount] = useState<string>("");
+  const [accountStatus, setAccountStatus] = useState<string>("disconnected");
   const [error, setError] = useState<string>("");
   const [chainId, setChainId] = useState<number>();
   const [amount, setAmount] = useState<string>("");
@@ -168,7 +128,8 @@ export default function Home() {
   };
 
   const payWithTransaction = async () => {
-    if (!provider || !amount) return;
+    if (accountStatus === 'disconnected' || !amount) return;
+    console.log("payWithTransaction")
 
     try {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
@@ -250,46 +211,43 @@ export default function Home() {
     }
   };
 
-  const refreshState = () => {
-    setAccount("");
-    setChainId(undefined);
-    setAmount("");
-    setTransactionHash("");
-    setFreeCoffeeMessage("");
-  };
-
-  const disconnect = () => {
-    refreshState();
-  };
-
-  useEffect(() => {
-    if (provider?.on) {
-      const handleAccountsChanged = (accounts: string[]) => {
-        if (accounts) setAccount(accounts[0]);
-      };
-
-      const handleChainChanged = (_hexChainId: string) => {
-        setError(`Chain changed: ${_hexChainId}`);
-        setChainId(parseInt(_hexChainId, 16));
-      };
-
-      const handleDisconnect = () => {
-        disconnect();
-      };
-
-      provider.on("accountsChanged", handleAccountsChanged);
-      provider.on("chainChanged", handleChainChanged);
-      provider.on("disconnect", handleDisconnect);
-
-      return () => {
-        if (provider.removeListener) {
-          provider.removeListener("accountsChanged", handleAccountsChanged);
-          provider.removeListener("chainChanged", handleChainChanged);
-          provider.removeListener("disconnect", handleDisconnect);
-        }
-      };
-    }
-  }, [provider]);
+  const AccountConnect = () => {
+    const { address, status } = useAccount();
+    const { disconnect } = useDisconnect();
+  
+    useEffect(() => {
+      if (status === 'connected') {
+        setAccountStatus('connected');
+      } else if (status === 'disconnected') {
+        setAccountStatus('disconnected');
+      }
+    }, [status]);
+  
+    return (
+      <div className="flex flex-grow items-center justify-center">
+        {(() => {
+          if (status === 'disconnected') {
+            return <ConnectAccount />;
+          }
+  
+          return (
+            <div className="flex flex-grow items-center justify-center">
+              {address && (
+                <button
+                  type="button"
+                  onClick={() => disconnect()}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  style={{ backgroundColor: '#FF7074', color: 'white' }} // Inline styles as a fallback
+                >
+                  Disconnect
+                </button>
+              )}
+            </div>
+          );
+        })()}
+      </div>
+    );
+  }
 
   const queryClient = new QueryClient();
   // <Avatar address="0x838aD0EAE54F99F1926dA7C3b6bFbF617389B4D9" />
@@ -321,42 +279,24 @@ export default function Home() {
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
                   <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
-                  {!account ? (
                     <AccountConnect />
-                  ) : (
-                    <>
-                      <HStack justifyContent="center" mb={2}>
-                        <Text>{`Connection Status: `}</Text>
-                        {account ? (
-                          <CheckCircleIcon color="green" />
-                        ) : (
-                          <WarningIcon color="#cd5700" />
-                        )}
-                      </HStack>
-                      <Tooltip label={account} placement="right">
-                        <Text>{`Account: ${account}`}</Text>
-                      </Tooltip>
-                      <Text>{`Network: Base`}</Text>
-                      <Button mt={2} colorScheme="red" onClick={disconnect}>Disconnect</Button>
-                    </>
-                  )}
                 </Box>
+            
+                {accountStatus === 'connected' && (
+                <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
+                  <VStack spacing={4}>
+                    <Input
+                      placeholder={"dollars"}
+                      maxLength={20}
+                      onChange={handleAmountChange}
+                      w="300px"
+                    />
+                    <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+                      Pay
+                    </Button>
+                  </VStack>
+                </Box>)}
 
-                {account && (
-                  <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
-                    <VStack spacing={4}>
-                      <Input
-                        placeholder={placeholder}
-                        maxLength={20}
-                        onChange={handleAmountChange}
-                        w="200px"
-                      />
-                      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
-                        Pay
-                      </Button>
-                    </VStack>
-                  </Box>
-                )}
                 {freeCoffeeMessage && (
                   <Box color="blue.500" mt="4" textAlign="center">
                     {freeCoffeeMessage}
