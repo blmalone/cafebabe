@@ -9,16 +9,17 @@ import {
   Container,
   useToast,
 } from "@chakra-ui/react";
-import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
-import { ethers } from "ethers";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract } from 'wagmi';
+import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract, useWriteContract, createConfig, http, useSwitchChain } from 'wagmi';
+// import {getGasPrice} from "@wagmi/core"; 
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { USDC_ABI } from "./abi/USDC";
+import { parseUnits, parseSignature, parseGwei } from "viem";
+import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
 
 
 const rpcUrl = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P";
@@ -31,19 +32,19 @@ const wagmiConfig = createConfig({
     coinbaseWallet({
       appName: 'cafebabe',
       preference: 'all', // Setting this as all gives you the QR code for scanning with Coinbase wallet.
+      chainId: base.id,
     }),
   ],
-  ssr: true,
+  ssr: false,
   transports: {
-    [baseSepolia.id]: http(baseSepoliaUrl),
     [base.id]: http(baseUrl),
+    [baseSepolia.id]: http(baseSepoliaUrl),
   },
-});
+})
 
 
-const COFFEE_SHOP_ADDRESS = "0x96db4d9244753a220782accbe649734970db121d";
+const COFFEE_SHOP_PROXY_ADDRESS = "0xCdBCB45E94C09c439CD314AEd01e50C4Df292e13";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
-const USDC_DECIMALS = 6;
 const COINBASE_BLUE = "#0052ff";
 
 export default function Home() {
@@ -233,26 +234,36 @@ export default function Home() {
   }
 
   const PayButton = () => {
+    const useChainResult = useSwitchChain();
     const { signTypedDataAsync } = useSignTypedData();
-    const { address } = useAccount();
-    const chainId = useChainId();
+    //const { address, chainId, chain } = useAccount({config:wagmiConfig});
+    const { address, chainId, chain } = useAccount();
+    const { writeContractAsync } = useWriteContract();
+
+    const chainIdFromChainId = useChainId();
     const nonce = useReadContract({
       abi: USDC_ABI,
       address: USDC_ADDRESS,
       functionName: 'nonces',
       args: [address],
     })
+    const USDC_DECIMALS = 6;
+    const convertedAmount = parseUnits(amount, USDC_DECIMALS);
+
 
     console.log("address: ", address);
-    console.log("chainId: ", chainId);
+    console.log("chainId from useChainId: ", chainIdFromChainId);
     console.log("nonce: ", nonce.data);
+    console.log("convertedAmount: ", convertedAmount);
+    console.log("chainId from useAccount: ", chainId);
+    console.log("chain from useAccount: ", chain);
 
     const payWithTransaction = async () => {
       console.log("payWithTransaction called");
 
       const domain = {
         name: 'USD Coin',
-        chainId: chainId,
+        chainId: base.id,
         verifyingContract: USDC_ADDRESS as `0x${string}`,
         version: '2',
       };
@@ -265,25 +276,54 @@ export default function Home() {
           { name: "nonce", type: "uint256" },
           { name: "deadline", type: "uint256" },
         ],
-      };
+      } as const;
+      const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
       const message = {
-        owner: address,
-        spender: COFFEE_SHOP_ADDRESS, // TODO: Replace with current proxy address for coffee shop upon registration.
-        value: amount, // Replace with actual value
-        nonce: nonce.data, // Replace with actual nonce
-        deadline: Math.floor(Date.now() / 1000) + 60 * 30, // 30 minutes from now
-      };
+        owner: address as `0x${string}`,
+        spender: COFFEE_SHOP_PROXY_ADDRESS as `0x${string}`, // TODO: Replace with current proxy address for coffee shop upon registration.
+        value: BigInt(convertedAmount), // Replace with actual value
+        nonce: BigInt(Number(nonce.data)), // Replace with actual nonce
+        deadline: BigInt(deadline), // 20 minutes from now
+      } as const;
 
       try {
+        // This was defaulting to mainnet - have to manually switch to the correct chain. 
+        // This was causing all kinds of issues for a while.
+        await useChainResult.switchChainAsync({ chainId: base.id });
+
+        console.log("domain: ", domain);
+        console.log("types: ", types);
+        console.log("message: ", message);
         const signatureResult = await signTypedDataAsync({
+          domain,
           types,
           primaryType: 'Permit',
-          message,
-          domain
+          message
         });
         console.log("signatureResult: ", signatureResult);
+
+        const { v, r, s } = parseSignature(signatureResult);
+        console.log("v: ", v);
+        console.log("r: ", r);
+        console.log("s: ", s);
+
+        const paid = await writeContractAsync({
+          abi: COFFEE_SHOP_ABI,
+          address: COFFEE_SHOP_PROXY_ADDRESS,
+          functionName: 'pay',
+          args: [
+            convertedAmount,
+            deadline,
+            v,
+            r,
+            s
+          ],
+          chainId: base.id
+        });
+
+        console.log("paid: ", paid);
       } catch (error) {
-        console.error("Error signing typed data: ", error);
+        console.error("Error when paying: ", error);
       }
     };
 

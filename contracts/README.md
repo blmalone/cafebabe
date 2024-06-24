@@ -66,7 +66,8 @@ Open `.env` file.
 ```bash
 source .env
 
-f```
+forge script script/CoffeeShopFactory.s.sol:CoffeeShopFactoryScript --broadcast --verify --rpc-url base --etherscan-api-key <INSERT_BASE_API_KEY>
+```
 
 <b>Note: The above command will print the address of your contract and a link to the block explorer. Click on the block explorer link to verify whether your contract has been deployed or not </b>
 
