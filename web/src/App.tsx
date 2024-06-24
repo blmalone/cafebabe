@@ -214,7 +214,7 @@ export default function Home() {
   const AccountConnect = () => {
     const { address, status } = useAccount();
     const { disconnect } = useDisconnect();
-  
+
     useEffect(() => {
       if (status === 'connected') {
         setAccountStatus('connected');
@@ -222,14 +222,14 @@ export default function Home() {
         setAccountStatus('disconnected');
       }
     }, [status]);
-  
+
     return (
       <div className="flex flex-grow items-center justify-center">
         {(() => {
           if (status === 'disconnected') {
             return <ConnectAccount />;
           }
-  
+
           return (
             <div className="flex flex-grow items-center justify-center">
               {address && (
@@ -279,24 +279,23 @@ export default function Home() {
                 </VStack>
                 <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" textAlign="center" bg="blue.50">
                   <Text fontSize="lg" fontWeight="bold" mb={2}>Connection Information</Text>
-                    <AccountConnect />
+                  <AccountConnect />
                 </Box>
-            
-                {accountStatus === 'connected' && (
-                <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
-                  <VStack spacing={4}>
-                    <Input
-                      placeholder={"dollars"}
-                      maxLength={20}
-                      onChange={handleAmountChange}
-                      w="300px"
-                    />
-                    <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
-                      Pay
-                    </Button>
-                  </VStack>
-                </Box>)}
 
+                {accountStatus === 'connected' && (
+                  <Box w="full" p={4} borderWidth="1px" borderRadius="lg" overflow="hidden" bg="blue.50">
+                    <VStack spacing={4}>
+                      <Input
+                        placeholder={"dollars"}
+                        maxLength={20}
+                        onChange={handleAmountChange}
+                        w="300px"
+                      />
+                      <Button colorScheme="teal" onClick={payWithTransaction} isDisabled={!amount}>
+                        Pay
+                      </Button>
+                    </VStack>
+                  </Box>)}
                 {freeCoffeeMessage && (
                   <Box color="blue.500" mt="4" textAlign="center">
                     {freeCoffeeMessage}
