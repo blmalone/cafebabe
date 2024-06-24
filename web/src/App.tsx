@@ -12,15 +12,13 @@ import {
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract, useWriteContract, createConfig, http, useSwitchChain } from 'wagmi';
-// import {getGasPrice} from "@wagmi/core"; 
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { USDC_ABI } from "./abi/USDC";
-import { parseUnits, parseSignature, parseGwei } from "viem";
+import { parseUnits, parseSignature } from "viem";
 import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
-
 
 const rpcUrl = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P";
 const baseUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base/');
@@ -61,42 +59,6 @@ export default function Home() {
     setAmount(amt);
   };
 
-  // const signPermit = async (signer: ethers.Signer, amount: ethers.BigNumber) => {
-  //   const domain = {
-  //     name: "USD Coin",
-  //     version: "2",
-  //     chainId: (await signer.provider!.getNetwork()).chainId,
-  //     verifyingContract: USDC_ADDRESS,
-  //   };
-
-  //   const types = {
-  //     Permit: [
-  //       { name: "owner", type: "address" },
-  //       { name: "spender", type: "address" },
-  //       { name: "value", type: "uint256" },
-  //       { name: "nonce", type: "uint256" },
-  //       { name: "deadline", type: "uint256" },
-  //     ],
-  //   };
-
-  //   const value = {
-  //     owner: account,
-  //     spender: COFFEE_SHOP_ADDRESS,
-  //     value: amount,
-  //     nonce: await new ethers.Contract(
-  //       USDC_ADDRESS,
-  //       ["function nonces(address owner) view returns (uint256)"],
-  //       signer
-  //     ).nonces(account),
-  //     deadline: Math.floor(Date.now() / 1000) + 60 * 20,
-  //   };
-
-  //   const signature = await signer._signTypedData(domain, types, value);
-  //   const { v, r, s } = ethers.utils.splitSignature(signature);
-
-  //   return { value, v, r, s };
-  // };
-
   // const checkUSDCBalance = async (signer: ethers.Signer, amountInWei: ethers.BigNumber) => {
   //   const usdcContract = new ethers.Contract(
   //     USDC_ADDRESS,
@@ -106,14 +68,6 @@ export default function Home() {
   //   const balance = await usdcContract.balanceOf(account);
   //   return balance.gte(amountInWei);
   // };
-
-  const fetchExchangeRate = async (fromCurrency: string) => {
-    const baseUrl = "https://api.coingecko.com/api/v3/simple/price";
-    const ids = fromCurrency === "usdc" ? "usd" : "gbp";
-    const response = await fetch(`${baseUrl}?ids=${ids}&vs_currencies=eth`);
-    const data = await response.json();
-    return data[ids].eth;
-  };
 
   // try {
   //   const ethersProvider = new ethers.providers.Web3Provider(provider);
@@ -236,7 +190,6 @@ export default function Home() {
   const PayButton = () => {
     const useChainResult = useSwitchChain();
     const { signTypedDataAsync } = useSignTypedData();
-    //const { address, chainId, chain } = useAccount({config:wagmiConfig});
     const { address, chainId, chain } = useAccount();
     const { writeContractAsync } = useWriteContract();
 
