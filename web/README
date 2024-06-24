@@ -1,5 +1,5 @@
-0xCafeBabe
-0xCafeBabe is a decentralized application (DApp) that allows users to buy coffee using cryptocurrency. The application integrates with Coinbase Wallet and uses Ethereum smart contracts to facilitate transactions.
+## cafeBabe
+cafeBabe is a decentralized application (DApp) that allows users to buy coffee using cryptocurrency. The application integrates with Coinbase Wallet and uses Ethereum smart contracts to facilitate transactions.
 
 Installation
 Clone the repository:

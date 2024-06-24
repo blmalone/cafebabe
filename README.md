@@ -1,19 +1,3 @@
-# Build Onchain Apps Template
+# cafebabe
 
-This project has two main folders:
-
-```bash
-.
-├── contracts
-│   ├── src
-│   ├── broadcast
-│   ├── script
-│   └── test
-└── web
-    ├── app
-    └── src
-```
-
-[contracts](/contracts/README.md) folder contains all the solidity code
-
-[web](/web/README.md) folder contains all the frontend code
+onchain system for cafes to accept crypto payments with built in loyalty mechanisms.
