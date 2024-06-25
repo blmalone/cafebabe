@@ -71,16 +71,6 @@ export default function Home() {
   };
 
 
-  // const checkUSDCBalance = async (signer: ethers.Signer, amountInWei: ethers.BigNumber) => {
-  //   const usdcContract = new ethers.Contract(
-  //     USDC_ADDRESS,
-  //     ["function balanceOf(address owner) view returns (uint256)"],
-  //     signer
-  //   );
-  //   const balance = await usdcContract.balanceOf(account);
-  //   return balance.gte(amountInWei);
-  // };
-
   // try {
   //   const ethersProvider = new ethers.providers.Web3Provider(provider);
   //   const signer = ethersProvider.getSigner();
@@ -221,16 +211,18 @@ export default function Home() {
     const USDC_DECIMALS = 6;
     const convertedAmount = parseUnits(amount, USDC_DECIMALS);
 
-
-    console.log("address: ", address);
-    console.log("chainId from useChainId: ", chainIdFromChainId);
-    console.log("nonce: ", nonce.data);
-    console.log("convertedAmount: ", convertedAmount);
-    console.log("chainId from useAccount: ", chainId);
-    console.log("chain from useAccount: ", chain);
+    const balance = useReadContract({
+      abi: USDC_ABI,
+      address: USDC_ADDRESS,
+      functionName: 'balanceOf',
+      args: [address],
+    });
 
     const payWithTransaction = async () => {
-      console.log("payWithTransaction called");
+      if (BigInt(Number(balance.data) < convertedAmount)) {
+        setError("You don't have enough funds for this payment!");
+        return
+      }
 
       const domain = {
         name: 'USD Coin',
@@ -261,22 +253,14 @@ export default function Home() {
         // This was defaulting to mainnet - have to manually switch to the correct chain. 
         // This was causing all kinds of issues for a while.
         await useChainResult.switchChainAsync({ chainId: base.id });
-
-        console.log("domain: ", domain);
-        console.log("types: ", types);
-        console.log("message: ", message);
         const signatureResult = await signTypedDataAsync({
           domain,
           types,
           primaryType: 'Permit',
           message
         });
-        console.log("signatureResult: ", signatureResult);
 
         const { v, r, s } = parseSignature(signatureResult);
-        console.log("v: ", v);
-        console.log("r: ", r);
-        console.log("s: ", s);
 
         const paid = await writeContractAsync({
           abi: COFFEE_SHOP_ABI,
@@ -291,8 +275,6 @@ export default function Home() {
           ],
           chainId: base.id
         });
-
-        console.log("paid: ", paid);
       } catch (error) {
         console.error("Error when paying: ", error);
       }
