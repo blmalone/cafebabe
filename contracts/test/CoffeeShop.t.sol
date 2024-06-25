@@ -91,6 +91,20 @@ contract CoffeeShopTest is Test {
 
         assertEq(coffeeShop.loyaltyPoints(user), 0);
     }
+
+    function testGetLoyaltyScheme() public {
+        // Test for Randomized Loyalty Scheme
+        coffeeShop.initializeRandomizedLoyaltyScheme(owner, address(usdc), basisPoints);
+        assertEq(uint256(coffeeShop.getLoyaltyScheme()), uint256(CoffeeShop.LoyaltyScheme.Randomized));
+
+        // Reset the contract state for the next test
+        vm.roll(block.number + 1);
+        coffeeShop = new CoffeeShop();
+
+        // Test for Predictable Loyalty Scheme
+        coffeeShop.initializePredictableLoyaltyScheme(owner, address(usdc), numPurchasesBeforeFree);
+        assertEq(uint256(coffeeShop.getLoyaltyScheme()), uint256(CoffeeShop.LoyaltyScheme.Predictable));
+    }
 }
 
 contract MockERC20 is IERC20 {

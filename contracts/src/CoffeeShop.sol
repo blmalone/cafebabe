@@ -34,6 +34,14 @@ contract CoffeeShop {
     event BasisPointsUpdated(uint256 newBasisPoints);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
+    enum LoyaltyScheme {
+        None,
+        Randomized,
+        Predictable
+    }
+
+    LoyaltyScheme public loyaltyScheme;
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can perform this action");
         _;
@@ -50,6 +58,7 @@ contract CoffeeShop {
     function initializeRandomizedLoyaltyScheme(address _owner, address _usdcAddress, uint256 _basisPoints) external {
         initialize(_owner, _usdcAddress);
         basisPoints = _basisPoints;
+        loyaltyScheme = LoyaltyScheme.Randomized;
     }
 
     function initializePredictableLoyaltyScheme(address _owner, address _usdcAddress, uint256 _numPurchasesBeforeFree)
@@ -57,10 +66,7 @@ contract CoffeeShop {
     {
         initialize(_owner, _usdcAddress);
         numPurchasesBeforeFree = _numPurchasesBeforeFree;
-    }
-
-    function isRandomizedLoyaltyScheme() internal view returns (bool) {
-        return numPurchasesBeforeFree == 0;
+        loyaltyScheme = LoyaltyScheme.Predictable;
     }
 
     function payWithRandomized(uint256 amount) internal {
@@ -102,10 +108,12 @@ contract CoffeeShop {
     function pay(uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
         usdc.permit(msg.sender, address(this), amount, deadline, v, r, s);
 
-        if (isRandomizedLoyaltyScheme()) {
+        if (loyaltyScheme == LoyaltyScheme.Randomized) {
             payWithRandomized(amount);
-        } else {
+        } else if (loyaltyScheme == LoyaltyScheme.Predictable) {
             payWithPredictable(amount);
+        } else {
+            revert("Invalid loyalty scheme");
         }
     }
 
@@ -146,5 +154,9 @@ contract CoffeeShop {
 
     function getOwner() external view returns (address) {
         return owner;
+    }
+
+    function getLoyaltyScheme() external view returns (LoyaltyScheme) {
+        return loyaltyScheme;
     }
 }
