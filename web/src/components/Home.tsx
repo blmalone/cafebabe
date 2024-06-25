@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from "react";
-import {
-    Box,
-    Button,
-    Input,
-    Text,
-    VStack,
-    Center,
-    Container,
-} from "@chakra-ui/react";
+// src/components/Home.tsx
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Input, Text, VStack, Center, Container } from "@chakra-ui/react";
 import { ConnectAccount } from '@coinbase/onchainkit/esm/wallet';
 import { Avatar, Address } from '@coinbase/onchainkit/esm/identity';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, useAccount, useDisconnect, useSignTypedData, useChainId, useReadContract, useWriteContract, createConfig, http, useSwitchChain } from 'wagmi';
 import { base, baseSepolia } from 'wagmi/chains';
 import '@coinbase/onchainkit/src/styles.css';
-import './styles/fonts.css';
-import './styles/connections.css';
+import '../styles/fonts.css';
+import '../styles/connections.css';
 import { coinbaseWallet } from 'wagmi/connectors';
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { USDC_ABI } from "./abi/USDC";
+import { USDC_ABI } from "../abi/USDC";
 import { parseUnits, parseSignature } from "viem";
-import { COFFEE_SHOP_ABI } from "./abi/CoffeeShopABI";
+import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
+
 
 const rpcUrl = "https://api.developer.coinbase.com/rpc/v1/base/0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P";
 const baseUrl = rpcUrl.replace(/\/v1\/(.+?)\//, '/v1/base/');
