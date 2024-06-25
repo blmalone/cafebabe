@@ -92,13 +92,7 @@ export default function Home() {
   const AccountConnect = () => {
     const { address, status } = useAccount();
     const { disconnect } = useDisconnect();
-
-    const { data: loyaltyScheme, error } = useReadContract({
-      abi: COFFEE_SHOP_ABI,
-      address: COFFEE_SHOP_PROXY_ADDRESS,
-      functionName: 'getLoyaltyScheme',
-    });
-
+  
     useEffect(() => {
       if (status === 'connected') {
         setAccountStatus('connected');
@@ -112,29 +106,12 @@ export default function Home() {
       }
     }, [status]);
 
-    useEffect(() => {
-      if (loyaltyScheme !== undefined) {
-        switch (loyaltyScheme) {
-          case LoyaltyScheme.Randomized:
-            setLoyaltyMessage("There's a 50% chance your next coffee will be free");
-            break;
-          case LoyaltyScheme.Predictable:
-            setLoyaltyMessage("Your 10th coffee will be free");
-            break;
-          default:
-            setLoyaltyMessage("No loyalty scheme is currently active");
-            break;
-        }
-      }
-    }, [loyaltyScheme]);
-
     return (
       <div className="flex flex-grow items-center justify-center">
         {(() => {
           if (status === 'disconnected') {
             return <ConnectAccount />;
           }
-
           return (
             <div className="flex flex-grow items-center justify-center">
               {address && (
@@ -177,10 +154,44 @@ export default function Home() {
       args: [address],
     });
 
+    const {data: loyaltyScheme, errorLoyalty}  = useReadContract({
+      abi: COFFEE_SHOP_ABI,
+      address: COFFEE_SHOP_PROXY_ADDRESS,
+      functionName: 'getLoyaltyScheme',
+    });
+
+    const {data: points, errorNumPoints}  = useReadContract({
+      abi: COFFEE_SHOP_ABI,
+      address: COFFEE_SHOP_PROXY_ADDRESS,
+      functionName: 'loyaltyPoints',
+      args: [address],
+    });
+
+    const {data: numBeforeFree, errorPurchases}  = useReadContract({
+      abi: COFFEE_SHOP_ABI,
+      address: COFFEE_SHOP_PROXY_ADDRESS,
+      functionName: 'numPurchasesBeforeFree',
+      args: [],
+    });
+
     const payWithTransaction = async () => {
       if (BigInt(Number(balance.data) < convertedAmount)) {
         setError("You don't have enough funds for this payment!");
         return
+      }
+
+      if (loyaltyScheme !== undefined) {
+        switch (loyaltyScheme) {
+          case LoyaltyScheme.Randomized:
+            setLoyaltyMessage("Randomized -- any one of your coffee purchases could be free!");
+            break;
+          case LoyaltyScheme.Predictable: 
+            setLoyaltyMessage(`Every ${BigInt(numBeforeFree)}th coffee will be free. You have ${BigInt(numBeforeFree) - BigInt(points)} to go!`);
+            break;
+          default:
+            setLoyaltyMessage("No loyalty scheme is currently active");
+            break;
+        }
       }
 
       const domain = {
