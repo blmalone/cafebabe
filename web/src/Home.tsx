@@ -251,7 +251,7 @@ export default function Home() {
     };
 
         return (
-            <Button colorScheme="blue" className="cafebabe-title" onClick={payWithTransaction} isDisabled={!amount}>
+            <Button bgColor="#344afb" color="white" _hover={{ bg: "green" }} className="cafebabe-title" onClick={payWithTransaction} isDisabled={!amount}>
                 Pay
             </Button>);
     }
@@ -263,7 +263,7 @@ export default function Home() {
               <OnchainKitProvider apiKey={"0dD2uvTjYG7Wp6QfzenzTi_OiY_Of91P"} chain={base}>
                   <Container maxW="container.md" centerContent>
                       <Box position="absolute" top={4} right={4}>
-                          <Button colorScheme="blue" className="cafebabe-title" onClick={handleBuyCryptoButtonClick} sx={{
+                          <Button bgColor="#344afb" color="white" className="cafebabe-title" onClick={handleBuyCryptoButtonClick} sx={{
                               fontSize: '0.75rem',
                               padding: '0.5rem 0.6rem',
                           }}>
