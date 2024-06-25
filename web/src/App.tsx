@@ -1,11 +1,15 @@
 // src/App.tsx
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { ChakraProvider, Box, Text, Center, VStack, Container } from "@chakra-ui/react";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ChakraProvider, Center, VStack, Container } from "@chakra-ui/react";
 import Home from './Home';
 import BuyCrypto from './BuyCrypto';
+import useScript from './useScript';
 
 const App: React.FC = () => {
+  useScript("https://js.stripe.com/v3/");
+  useScript("https://crypto-js.stripe.com/crypto-onramp-outer.js");
+
   return (
     <ChakraProvider>
       <Router>
