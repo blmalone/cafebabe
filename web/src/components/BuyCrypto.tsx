@@ -1,4 +1,4 @@
-// src/BuyCrypto.tsx
+// src/components/BuyCrypto.tsx
 import React from 'react';
 import { Box, Center, Text } from "@chakra-ui/react";
 

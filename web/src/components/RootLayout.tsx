@@ -1,37 +1,41 @@
-import './global.css';
+// src/components/RootLayout.tsx
+import { ReactNode } from 'react';
+import { OnchainKitProvider } from '@coinbase/onchainkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { base, baseSepolia } from 'viem/chains';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { coinbaseWallet } from 'wagmi/connectors';
 
-import GoogleAnalytics from '@/components/GoogleAnalytics/GoogleAnalytics';
-import OnchainProviders from '@/OnchainProviders';
-import { initAnalytics } from '@/utils/analytics';
-import { inter } from './fonts';
-import type { Metadata } from 'next';
+type Props = { children: ReactNode };
 
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1.0,
-};
+const queryClient = new QueryClient();
+const baseUrl = '/api/rpc';
+const baseSepoliaUrl = '/api/rpc-sepolia';
 
-export const metadata: Metadata = {
-  manifest: '/manifest.json',
-  other: {
-    boat: '0.17.0',
-  },
-};
+const wagmiConfig = createConfig({
+    chains: [base, baseSepolia],
+    connectors: [
+        coinbaseWallet({
+            appName: 'cafebabe',
+            preference: 'all',
+            chainId: base.id,
+        }),
+    ],
+    ssr: false,
+    transports: {
+        [base.id]: http(baseUrl),
+        [baseSepolia.id]: http(baseSepoliaUrl),
+    },
+});
 
-// Stat analytics before the App renders,
-// so we can track page views and early events
-initAnalytics();
-
-/** Root layout to define the structure of every page
- * https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts
- */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+function RootLayout({ children }: Props) {
   return (
-    <html lang="en" className={`${inter.className}`}>
-      <body className="flex flex-1 flex-col">
-        <OnchainProviders>{children}</OnchainProviders>
-      </body>
-      <GoogleAnalytics />
-    </html>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <OnchainKitProvider chain={base}>{children}</OnchainKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
+
+export default RootLayout;

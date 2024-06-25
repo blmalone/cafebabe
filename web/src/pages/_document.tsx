@@ -6,9 +6,6 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="en" className="inter">
-        <Head>
-          {/* Add custom fonts or other head elements here */}
-        </Head>
         <body className="flex flex-1 flex-col">
           <RootLayout>
             <Main />
