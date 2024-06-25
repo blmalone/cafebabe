@@ -10,6 +10,7 @@ import '../styles/connections.css';
 import { USDC_ABI } from "../abi/USDC";
 import { parseUnits, parseSignature } from "viem";
 import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
+import { useMemo } from 'react';
 
 const COFFEE_SHOP_PROXY_ADDRESS = "0xF98Cc7feFde949421017573cb93e6E68546A97d5";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
@@ -97,29 +98,67 @@ export default function Home() {
             </div>
         );
     }
+    
+    function useOnchainBalance() {
+        const { address } = useAccount();
+      
+        const contractReadResult = useReadContract({
+          abi: USDC_ABI,
+          address: USDC_ADDRESS,
+          functionName: 'balanceOf',
+          args: [address],
+        });
+      
+        console.log(contractReadResult);
+        return useMemo(
+          () => ({
+            balance:
+              contractReadResult.status === 'success' ? contractReadResult.data : null,
+            isLoading: contractReadResult.status === 'pending',
+            isError: contractReadResult.status === 'error',
+            refetchBalance: contractReadResult.refetch,
+          }),
+          [contractReadResult],
+        );
+      }
+
+      function useNonce() {
+        const { address } = useAccount();
+        console.log("ADDRESS");
+        console.log(address);
+        const contractReadResult = useReadContract({
+            abi: USDC_ABI,
+            address: USDC_ADDRESS,
+            functionName: 'nonces',
+            args: [address],
+        });
+
+        console.log("contractReadResult");
+        console.log(contractReadResult);
+
+        return useMemo(
+          () => ({
+            nonce: contractReadResult.status === 'success' ? contractReadResult.data : null,
+            isLoading: contractReadResult.status === 'pending',
+            isError: contractReadResult.status === 'error',
+            refetchNonce: contractReadResult.refetch,
+          }),
+          [contractReadResult],
+        );
+      }
 
     const PayButton = () => {
         const useChainResult = useSwitchChain();
         const { signTypedDataAsync } = useSignTypedData();
         const { address } = useAccount();
         const { writeContractAsync } = useWriteContract();
+        const { balance, isLoading: isBalanceLoading, isError: isBalanceError } = useOnchainBalance();
+       const { nonce, isLoading: isNonceLoading, isError: isNonceError } = useNonce();
 
         const chainId = useChainId();
-        const nonce = useReadContract({
-            abi: USDC_ABI,
-            address: USDC_ADDRESS,
-            functionName: 'nonces',
-            args: [address],
-        });
+    
         const USDC_DECIMALS = 6;
         const convertedAmount = parseUnits(amount, USDC_DECIMALS);
-
-        const balance = useReadContract({
-            abi: USDC_ABI,
-            address: USDC_ADDRESS,
-            functionName: 'balanceOf',
-            args: [address],
-        });
 
         const { data: loyaltyScheme } = useReadContract({
             abi: COFFEE_SHOP_ABI,
@@ -143,7 +182,12 @@ export default function Home() {
 
    
         const payWithTransaction = async () => {
-            if (BigInt(Number(balance.data)) < convertedAmount) {
+            if (isBalanceLoading || isNonceLoading || isNonceError) {
+                setError("Error fetching balance or nonce or insufficient funds");
+                return;
+            }
+
+            if (BigInt(Number(balance)) < convertedAmount) {
                 setError("You don't have enough funds for this payment!");
                 return;
             }
@@ -184,7 +228,7 @@ export default function Home() {
                 owner: address as `0x${string}`,
                 spender: COFFEE_SHOP_PROXY_ADDRESS as `0x${string}`,
                 value: BigInt(convertedAmount),
-                nonce: BigInt(Number(nonce.data)),
+                nonce: BigInt(Number(nonce)),
                 deadline: BigInt(deadline),
             } as const;
 
@@ -219,7 +263,6 @@ export default function Home() {
             </Button>
         );
     }
-
     return (
         <Container maxW="container.md" centerContent>
             <Box position="absolute" top={4} right={4}>
