@@ -141,7 +141,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => disconnect()}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  className="bg-red-500 text-white px-4 py-2 rounded cafebabe-title"
                   style={{ backgroundColor: '#FF7074', color: 'white', marginTop: 10 }} // Inline styles as a fallback
                 >
                   Disconnect
