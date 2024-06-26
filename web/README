@@ -1,29 +1,8 @@
 ## Installation
-Clone the repository:
 
-bash
-Copy code
-git clone https://github.com/yourusername/0xCafeBabe.git
-cd 0xCafeBabe
-Install dependencies:
-
-bash
-Copy code
-npm install
-Set up environment variables:
-
-Create a .env file in the root of your project and add your Infura Project ID:
-
-plaintext
-Copy code
-INFURA_ID=your_infura_project_id
-Running the Application
-To run the application locally, use the following command:
-
-bash
-Copy code
-npm start
-This will start a development server at http://localhost:3000.
+`yarn install`
+`yarn build`
+`yarn start`
 
 ## Project Structure
 web/
