@@ -60,6 +60,8 @@ export default function Home() {
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>("0x");
   const [isTransactionRunning, setIsTransactionRunning] = useState(false);
   const { hasCopied, onCopy } = useClipboard(connectedAddress);
+  const [reloadAccountConnect, setReloadAccountConnect] =
+    useState<boolean>(false);
 
   const handleBuyCryptoButtonClick = () => {
     const standaloneOnramp = (window as any).StripeOnramp.Standalone({
@@ -124,7 +126,6 @@ export default function Home() {
             : null,
         isLoading: contractReadResult.status === "pending",
         isError: contractReadResult.status === "error",
-        refetchNonce: contractReadResult.refetch,
       }),
       [contractReadResult]
     );
@@ -215,7 +216,12 @@ export default function Home() {
             break;
         }
       }
-    }, [loyaltyScheme, loyaltyPoints, numPurchasesBeforeFree]);
+    }, [
+      loyaltyScheme,
+      loyaltyPoints,
+      numPurchasesBeforeFree,
+      reloadAccountConnect,
+    ]);
 
     return (
       <div className="flex flex-grow items-center justify-center">
@@ -301,7 +307,6 @@ export default function Home() {
         refetchReceipt: () => {},
       };
     }
-
     const receipt = useWaitForTransactionReceipt({
       hash: transactionHash as `0x${string}`,
     });
@@ -407,6 +412,7 @@ export default function Home() {
           chainId: base.id,
         });
         setTransactionHash(txHash);
+        setReloadAccountConnect(!reloadAccountConnect);
         setAmount("");
       } catch (error) {
         console.error("Error when paying: ", error);
@@ -519,12 +525,12 @@ export default function Home() {
                   <Avatar
                     loadingComponent={
                       <Spinner
-                        size="lg"
+                        size="md"
                         color={COINBASE_BLUE}
                         opacity={0.8}
                         thickness="4px"
                         speed="0.65s"
-                        />
+                      />
                     }
                     address={connectedAddress}
                   />
@@ -581,8 +587,8 @@ export default function Home() {
                     w="300px"
                     textAlign="center"
                     _placeholder={{ textAlign: "center" }}
-                    onFocus={(e) => (e.target.placeholder = '')} 
-                    onBlur={(e) => (e.target.placeholder = 'amount')}
+                    onFocus={(e) => (e.target.placeholder = "")}
+                    onBlur={(e) => (e.target.placeholder = "amount")}
                   />
                   <PayButton />
                 </VStack>
