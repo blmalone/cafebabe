@@ -9,6 +9,7 @@ import {
   Center,
   Container,
   Spinner,
+  Link,
 } from "@chakra-ui/react";
 import { ConnectAccount } from "@coinbase/onchainkit/esm/wallet";
 import { Avatar, Address } from "@coinbase/onchainkit/esm/identity";
@@ -44,15 +45,15 @@ enum LoyaltyScheme {
 export default function Home() {
   const [accountStatus, setAccountStatus] = useState<string>("disconnected");
   const [error, setError] = useState<string>("");
-  const [connectedAddress, setConnectedAddress] = useState<string>("");
+  const [connectedAddress, setConnectedAddress] = useState<`0x${string}`>("0x");
   const [loyaltyMessage, setLoyaltyMessage] = useState<string>("");
   const [lastVisit, setLastVisit] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [transactionHash, setTransactionHash] = useState<string>("");
-  const [freeCoffeeMessage, setFreeCoffeeMessage] = useState<string>("");
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>("0x");
+  const [isTransactionRunning, setIsTransactionRunning] = useState(false);
 
   const handleBuyCryptoButtonClick = () => {
-    const standaloneOnramp = window.StripeOnramp.Standalone({
+    const standaloneOnramp = (window as any).StripeOnramp.Standalone({
       source_currency: "usd",
       amount: { source_amount: "10" },
       destination_networks: ["ethereum"],
@@ -172,7 +173,7 @@ export default function Home() {
         setLoyaltyMessage("");
         setAccountStatus("disconnected");
         setLastVisit("");
-        setConnectedAddress("");
+        setConnectedAddress("0x");
       }
     }, [status]);
 
@@ -284,7 +285,7 @@ export default function Home() {
   }
 
   function useWaitForTxReceipt(transactionHash: `0x${string}`) {
-    if (!transactionHash) {
+    if (transactionHash == "0x") {
       return {
         receipt: null,
         isLoading: false,
@@ -296,8 +297,6 @@ export default function Home() {
     const receipt = useWaitForTransactionReceipt({
       hash: transactionHash as `0x${string}`,
     });
-
-    console.log(receipt);
 
     return useMemo(
       () => ({
@@ -328,7 +327,7 @@ export default function Home() {
 
     const {
       receipt,
-      isLoading: isReceiptLoading,
+    isLoading: isReceiptLoading,
       isError: isReceiptError,
       refetchReceipt,
     } = useWaitForTxReceipt(transactionHash);
@@ -339,13 +338,18 @@ export default function Home() {
     const convertedAmount = parseUnits(amount, USDC_DECIMALS);
 
     const payWithTransaction = async () => {
+      setIsTransactionRunning(true); 
+      setTransactionHash("0x"); 
+
       if (isBalanceLoading || isNonceLoading || isNonceError) {
         setError("Error fetching balance or nonce or insufficient funds");
+        setIsTransactionRunning(false);
         return;
       }
 
       if (BigInt(Number(balance)) < convertedAmount) {
         setError("You don't have enough funds for this payment!");
+        setIsTransactionRunning(false);
         return;
       }
 
@@ -376,6 +380,7 @@ export default function Home() {
       } as const;
 
       try {
+        // We have to do this otherwise wagmi uses default eth chain id no matter what...
         await useChainResult.switchChainAsync({ chainId: base.id });
         const signatureResult = await signTypedDataAsync({
           domain,
@@ -385,7 +390,6 @@ export default function Home() {
         });
 
         const { v, r, s } = parseSignature(signatureResult);
-        console.log("receipt before ", receipt);
 
         const txHash = await writeContractAsync({
           abi: COFFEE_SHOP_ABI,
@@ -395,17 +399,17 @@ export default function Home() {
           chainId: base.id,
         });
         setTransactionHash(txHash);
-
-        console.log("receipt after: ", receipt);
+        setAmount("");
       } catch (error) {
         console.error("Error when paying: ", error);
       }
+      setIsTransactionRunning(false);
     };
 
     return (
       <Box>
         {error && <Box color="red">{error}</Box>}
-        {!isReceiptLoading && (
+        {!isTransactionRunning && !isReceiptLoading &&(
           <Button
             bgColor="#344afb"
             color="white"
@@ -415,18 +419,21 @@ export default function Home() {
             isDisabled={
               !amount ||
               isBalanceLoading ||
-              isBalanceError ||
-              isNonceLoading ||
-              isNonceError
+              isNonceLoading
             }
           >
             Pay
           </Button>
         )}
-        {isReceiptLoading && <Spinner />}
+        {(isTransactionRunning || isReceiptLoading) && <Spinner />}
         {receipt && (
           <Box color="green.500" mt="4" textAlign="center">
-            {`Transaction Hash: ${transactionHash}`}
+            <Link
+              href={`https://basescan.org/tx/${transactionHash}`}
+              isExternal
+            >
+              View your transaction
+            </Link>
           </Box>
         )}
       </Box>
@@ -556,6 +563,7 @@ export default function Home() {
                     className="cafebabe-title"
                     placeholder={"amount"}
                     maxLength={20}
+                    value={amount}
                     onChange={handleAmountChange}
                     w="300px"
                   />
@@ -588,12 +596,6 @@ export default function Home() {
                 </Text>
               </Box>
             </VStack>
-          )}
-
-          {freeCoffeeMessage && (
-            <Box color="blue.500" mt="4" textAlign="center">
-              {freeCoffeeMessage}
-            </Box>
           )}
           {error && (
             <Box color="#FF7074" mt="4" textAlign="center">
