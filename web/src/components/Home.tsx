@@ -416,7 +416,6 @@ export default function Home() {
 
     return (
       <Box>
-        {error && <Box color="red">{error}</Box>}
         {!isTransactionRunning &&
           !isReceiptLoading &&
           (BigInt(Number(balance)) < convertedAmount ? (
@@ -443,7 +442,7 @@ export default function Home() {
           ))}
         {(isTransactionRunning || isReceiptLoading) && <Spinner />}
         {receipt && (
-          <Box color="green.500" mt="4" textAlign="center">
+          <Box color="gray" mt="4" textAlign="center">
             <Link
               href={`https://basescan.org/tx/${transactionHash}`}
               isExternal
@@ -519,38 +518,12 @@ export default function Home() {
                 <Center marginBottom={2}>
                   <Avatar
                     loadingComponent={
-                      <div className="h-8 w-8">
-                        <svg
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <polygon
-                            points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6"
-                            fill="yellow"
-                            stroke="yellow"
-                            strokeWidth="1"
-                          />
-                        </svg>
-                      </div>
-                    }
-                    defaultComponent={
-                      <div className="h-8 w-8">
-                        <svg
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <polygon
-                            points="6,1 14,1 19,6 19,14 14,19 6,19 1,14 1,6"
-                            fill="green"
-                            stroke="green"
-                            strokeWidth="1"
-                          />
-                        </svg>
-                      </div>
+                      <Spinner
+                        size="lg"
+                        color="blue.500"
+                        thickness="4px"
+                        speed="0.65s"
+                        />
                     }
                     address={connectedAddress}
                   />
@@ -574,7 +547,7 @@ export default function Home() {
                   _active={{ bg: "transparent" }}
                 />
                 {hasCopied && (
-                  <Text ml={2} color="green.500">
+                  <Text ml={2} color="gray">
                     Copied!
                   </Text>
                 )}
@@ -600,11 +573,15 @@ export default function Home() {
                 <VStack spacing={4}>
                   <Input
                     className="cafebabe-title"
-                    placeholder={"amount"}
+                    placeholder="amount"
                     maxLength={20}
                     value={amount}
                     onChange={handleAmountChange}
                     w="300px"
+                    textAlign="center"
+                    _placeholder={{ textAlign: "center" }}
+                    onFocus={(e) => (e.target.placeholder = '')} 
+                    onBlur={(e) => (e.target.placeholder = 'amount')}
                   />
                   <PayButton />
                 </VStack>
