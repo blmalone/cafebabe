@@ -440,6 +440,7 @@ export default function Home() {
     );
   };
 
+
   return (
     <Container maxW="container.md" centerContent>
       <Box position="absolute" top={4} right={4}>
@@ -495,7 +496,7 @@ export default function Home() {
                 Connection
               </Text>
             )}
-            {connectedAddress && (
+            {(connectedAddress !== "0x") && (
               <b>
                 <Center marginBottom={2}>
                   <Avatar
@@ -538,7 +539,8 @@ export default function Home() {
                 </Center>
               </b>
             )}
-            {connectedAddress && (
+
+            {(connectedAddress !== "0x") && (
               <Address className="cafebabe-title" address={connectedAddress} />
             )}
             <AccountConnect />
