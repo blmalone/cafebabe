@@ -1,6 +1,6 @@
 // src/pages/_document.tsx
-import Document, { Html, Head, Main, NextScript } from 'next/document';
-import RootLayout from '@/components/RootLayout';
+import Document, { Html, Head, Main, NextScript } from "next/document";
+import RootLayout from "@/components/RootLayout";
 
 class MyDocument extends Document {
   render() {

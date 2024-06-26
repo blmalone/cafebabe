@@ -1,10 +1,10 @@
 // src/pages/App.tsx
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import { ChakraProvider, Center, VStack, Container } from "@chakra-ui/react";
-import HomePage from './index'; 
-import BuyCrypto from '../components/BuyCrypto';
-import useScript from '../useScript';
+import HomePage from "./index";
+import Register from "../components/Register";
+import useScript from "../useScript";
 
 const App: React.FC = () => {
   useScript("https://js.stripe.com/v3/");
@@ -17,7 +17,7 @@ const App: React.FC = () => {
           <VStack spacing={6}>
             <Routes>
               <Route path="/" element={<HomePage />} /> {/* using HomePage */}
-              <Route path="/simple" element={<BuyCrypto />} />
+              <Route path="/register" element={<Register />} />
             </Routes>
           </VStack>
         </Center>

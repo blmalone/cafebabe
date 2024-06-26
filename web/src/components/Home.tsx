@@ -10,6 +10,11 @@ import {
   Container,
   Spinner,
   Link,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
 } from "@chakra-ui/react";
 import { ConnectAccount } from "@coinbase/onchainkit/esm/wallet";
 import { Avatar, Address } from "@coinbase/onchainkit/esm/identity";
@@ -26,6 +31,7 @@ import {
 import "@coinbase/onchainkit/src/styles.css";
 import "../styles/fonts.css";
 import "../styles/connections.css";
+import { HamburgerIcon } from "@chakra-ui/icons"; 
 import { USDC_ABI } from "../abi/USDC";
 import { parseUnits, parseSignature } from "viem";
 import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
@@ -55,7 +61,7 @@ export default function Home() {
   const handleBuyCryptoButtonClick = () => {
     const standaloneOnramp = (window as any).StripeOnramp.Standalone({
       source_currency: "usd",
-      amount: { source_amount: "10" },
+      amount: { source_amount: amount || '10' },
       destination_networks: ["ethereum"],
       destination_currencies: ["eth"],
       destination_currency: "eth",
@@ -68,7 +74,6 @@ export default function Home() {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const regex = /^\d*\.?\d*$/;
-
     if (regex.test(value) || value === "") {
       setAmount(value);
       setError("");
@@ -409,7 +414,18 @@ export default function Home() {
     return (
       <Box>
         {error && <Box color="red">{error}</Box>}
-        {!isTransactionRunning && !isReceiptLoading &&(
+        {!isTransactionRunning && !isReceiptLoading && (
+        BigInt(Number(balance)) < convertedAmount ? (
+          <Button
+            bgColor="#344afb"
+            color="white"
+            _hover={{ bg: "green" }}
+            className="cafebabe-title"
+            onClick={handleBuyCryptoButtonClick}
+          >
+            Buy Crypto
+          </Button>
+        ) : (
           <Button
             bgColor="#344afb"
             color="white"
@@ -424,7 +440,8 @@ export default function Home() {
           >
             Pay
           </Button>
-        )}
+        )
+      )}
         {(isTransactionRunning || isReceiptLoading) && <Spinner />}
         {receipt && (
           <Box color="green.500" mt="4" textAlign="center">
@@ -443,20 +460,21 @@ export default function Home() {
 
   return (
     <Container maxW="container.md" centerContent>
-      <Box position="absolute" top={4} right={4}>
-        <Button
-          bgColor="#344afb"
-          color="white"
-          className="cafebabe-title"
-          onClick={handleBuyCryptoButtonClick}
-          sx={{
-            fontSize: "0.75rem",
-            padding: "0.5rem 0.6rem",
-          }}
-        >
-          Buy Crypto
-        </Button>
-      </Box>
+        <Menu>
+        <MenuButton
+          as={IconButton}
+          aria-label="Options"
+          icon={<HamburgerIcon />}
+          variant="outline"
+          position="absolute"
+          top={4}
+          right={4}
+        />
+        <MenuList>
+          <MenuItem onClick={handleBuyCryptoButtonClick}>Buy Crypto</MenuItem>
+          <MenuItem as={Link} href="/register">Register</MenuItem>
+        </MenuList>
+      </Menu>
       <Center
         className={
           accountStatus === "connected" ? "connected" : "not-connected"
