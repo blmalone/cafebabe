@@ -520,7 +520,8 @@ export default function Home() {
                     loadingComponent={
                       <Spinner
                         size="lg"
-                        color="blue.500"
+                        color={COINBASE_BLUE}
+                        opacity={0.8}
                         thickness="4px"
                         speed="0.65s"
                         />
