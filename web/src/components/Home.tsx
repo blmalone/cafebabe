@@ -31,7 +31,7 @@ import {
 import "@coinbase/onchainkit/src/styles.css";
 import "../styles/fonts.css";
 import "../styles/connections.css";
-import { HamburgerIcon } from "@chakra-ui/icons"; 
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { USDC_ABI } from "../abi/USDC";
 import { parseUnits, parseSignature } from "viem";
 import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
@@ -61,7 +61,7 @@ export default function Home() {
   const handleBuyCryptoButtonClick = () => {
     const standaloneOnramp = (window as any).StripeOnramp.Standalone({
       source_currency: "usd",
-      amount: { source_amount: amount || '10' },
+      amount: { source_amount: amount || "10" },
       destination_networks: ["ethereum"],
       destination_currencies: ["eth"],
       destination_currency: "eth",
@@ -332,7 +332,7 @@ export default function Home() {
 
     const {
       receipt,
-    isLoading: isReceiptLoading,
+      isLoading: isReceiptLoading,
       isError: isReceiptError,
       refetchReceipt,
     } = useWaitForTxReceipt(transactionHash);
@@ -343,8 +343,8 @@ export default function Home() {
     const convertedAmount = parseUnits(amount, USDC_DECIMALS);
 
     const payWithTransaction = async () => {
-      setIsTransactionRunning(true); 
-      setTransactionHash("0x"); 
+      setIsTransactionRunning(true);
+      setTransactionHash("0x");
 
       if (isBalanceLoading || isNonceLoading || isNonceError) {
         setError("Error fetching balance or nonce or insufficient funds");
@@ -414,34 +414,30 @@ export default function Home() {
     return (
       <Box>
         {error && <Box color="red">{error}</Box>}
-        {!isTransactionRunning && !isReceiptLoading && (
-        BigInt(Number(balance)) < convertedAmount ? (
-          <Button
-            bgColor="#344afb"
-            color="white"
-            _hover={{ bg: "green" }}
-            className="cafebabe-title"
-            onClick={handleBuyCryptoButtonClick}
-          >
-            Buy Crypto
-          </Button>
-        ) : (
-          <Button
-            bgColor="#344afb"
-            color="white"
-            _hover={{ bg: "green" }}
-            className="cafebabe-title"
-            onClick={payWithTransaction}
-            isDisabled={
-              !amount ||
-              isBalanceLoading ||
-              isNonceLoading
-            }
-          >
-            Pay
-          </Button>
-        )
-      )}
+        {!isTransactionRunning &&
+          !isReceiptLoading &&
+          (BigInt(Number(balance)) < convertedAmount ? (
+            <Button
+              bgColor="#344afb"
+              color="white"
+              _hover={{ bg: "green" }}
+              className="cafebabe-title"
+              onClick={handleBuyCryptoButtonClick}
+            >
+              Buy Crypto
+            </Button>
+          ) : (
+            <Button
+              bgColor="#344afb"
+              color="white"
+              _hover={{ bg: "green" }}
+              className="cafebabe-title"
+              onClick={payWithTransaction}
+              isDisabled={!amount || isBalanceLoading || isNonceLoading}
+            >
+              Pay
+            </Button>
+          ))}
         {(isTransactionRunning || isReceiptLoading) && <Spinner />}
         {receipt && (
           <Box color="green.500" mt="4" textAlign="center">
@@ -457,10 +453,9 @@ export default function Home() {
     );
   };
 
-
   return (
     <Container maxW="container.md" centerContent>
-        <Menu>
+      <Menu>
         <MenuButton
           as={IconButton}
           aria-label="Options"
@@ -472,7 +467,9 @@ export default function Home() {
         />
         <MenuList>
           <MenuItem onClick={handleBuyCryptoButtonClick}>Buy Crypto</MenuItem>
-          <MenuItem as={Link} href="/register">Register</MenuItem>
+          <MenuItem as={Link} href="/register">
+            Register
+          </MenuItem>
         </MenuList>
       </Menu>
       <Center
@@ -514,7 +511,7 @@ export default function Home() {
                 Connection
               </Text>
             )}
-            {(connectedAddress !== "0x") && (
+            {connectedAddress !== "0x" && (
               <b>
                 <Center marginBottom={2}>
                   <Avatar
@@ -558,7 +555,7 @@ export default function Home() {
               </b>
             )}
 
-            {(connectedAddress !== "0x") && (
+            {connectedAddress !== "0x" && (
               <Address className="cafebabe-title" address={connectedAddress} />
             )}
             <AccountConnect />
