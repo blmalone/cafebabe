@@ -14,7 +14,9 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useClipboard,
   IconButton,
+  Flex,
 } from "@chakra-ui/react";
 import { ConnectAccount } from "@coinbase/onchainkit/esm/wallet";
 import { Avatar, Address } from "@coinbase/onchainkit/esm/identity";
@@ -31,7 +33,7 @@ import {
 import "@coinbase/onchainkit/src/styles.css";
 import "../styles/fonts.css";
 import "../styles/connections.css";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CopyIcon } from "@chakra-ui/icons";
 import { USDC_ABI } from "../abi/USDC";
 import { parseUnits, parseSignature } from "viem";
 import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
@@ -57,6 +59,7 @@ export default function Home() {
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>("0x");
   const [isTransactionRunning, setIsTransactionRunning] = useState(false);
+  const { hasCopied, onCopy } = useClipboard(connectedAddress);
 
   const handleBuyCryptoButtonClick = () => {
     const standaloneOnramp = (window as any).StripeOnramp.Standalone({
@@ -554,9 +557,28 @@ export default function Home() {
                 </Center>
               </b>
             )}
-
             {connectedAddress !== "0x" && (
-              <Address className="cafebabe-title" address={connectedAddress} />
+              <Flex alignItems="center" justifyContent="center">
+                <Address
+                  className="cafebabe-title"
+                  address={connectedAddress}
+                />
+                <IconButton
+                  aria-label="Copy address"
+                  icon={<CopyIcon />}
+                  size="sm"
+                  ml={2}
+                  onClick={onCopy}
+                  bg="transparent"
+                  _hover={{ bg: "transparent" }}
+                  _active={{ bg: "transparent" }}
+                />
+                {hasCopied && (
+                  <Text ml={2} color="green.500">
+                    Copied!
+                  </Text>
+                )}
+              </Flex>
             )}
             <AccountConnect />
           </Box>
