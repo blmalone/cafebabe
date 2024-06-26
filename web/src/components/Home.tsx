@@ -32,7 +32,7 @@ import { COFFEE_SHOP_ABI } from "../abi/CoffeeShopABI";
 import { useMemo } from "react";
 import { base } from "wagmi/chains";
 
-const COFFEE_SHOP_PROXY_ADDRESS = "0xF98Cc7feFde949421017573cb93e6E68546A97d5";
+const COFFEE_SHOP_PROXY_ADDRESS = "0xc5abB05dCAe31dF09C699C3126c56bBD95E186cA";
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
 const COINBASE_BLUE = "#0052ff";
 

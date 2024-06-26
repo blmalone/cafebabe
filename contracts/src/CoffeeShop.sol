@@ -51,7 +51,7 @@ contract CoffeeShop {
         require(initialized == false && owner == address(0), "Already initialized");
         owner = _owner;
         usdc = IERC20(_usdcAddress);
-        minAmount = 1 * 10 ** 18; // Assuming 1 USDC (decimals may vary)
+        minAmount = 1 * 10 ** 6; // Assuming 1 USDC (decimals may vary)
         initialized = true;
     }
 
