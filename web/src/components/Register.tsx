@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Center, Text, Flex } from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 
 // TODO: add a page for registration for a coffee shop
 // This would involve deploying a proxy contract for the new shop

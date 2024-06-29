@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "homepage": "https://cafebabe.shop",
   "devDependencies": {
     "dotenv-cli": "^7.4.2",
     "parcel": "^2.12.0",
