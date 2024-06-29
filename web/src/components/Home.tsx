@@ -475,7 +475,7 @@ export default function Home() {
         />
         <MenuList>
           <MenuItem onClick={handleBuyCryptoButtonClick}>Buy Crypto</MenuItem>
-          <MenuItem as={Link} href="/register">
+          <MenuItem as={Link} href="/#/register">
             Register
           </MenuItem>
         </MenuList>
