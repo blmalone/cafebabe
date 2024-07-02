@@ -5,6 +5,7 @@
 `yarn start`
 
 ## Project Structure
+```
 web/
 ├── public/
 │   ├── index.html
@@ -31,3 +32,4 @@ web/
 ├── .env
 ├── package.json
 ├── tsconfig.json
+```
