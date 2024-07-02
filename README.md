@@ -2,7 +2,7 @@
 
 An onchain system for cafes to accept crypto payments with built in loyalty mechanisms.
 
-
+🔵 _Submission for 2024 'build on base' summer buildathon: Check out our project [here!](https://devfolio.co/projects/cafebabe-6eaa)_ 🔵
 
 ## The problem cafebabe solves
 
